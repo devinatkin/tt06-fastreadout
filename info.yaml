@@ -38,12 +38,11 @@ documentation:
     - DATA_BUS_2_IN_8
 
 project:
-  language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   title:        "Fast Readout Image Sensor Prototype"      # Project title
   author:       "Devin Atkin"      # Your name
   discord:      "devinatkin"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "This Project Pretends to be an Image Sensor, It's not an Image Sensor"      # One line description of what your project does
-  language:     "Verilog" # other examples include Verilog, Amaranth, VHDL, etc
+  language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     50000       # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
