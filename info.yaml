@@ -1,53 +1,94 @@
-# Tiny Tapeout project information
+# Tiny Tapeout project information (Old format, because I like to have things pass through git)
+documentation:
+  title:        "Fast Readout Image Sensor Prototype"      # Project title
+  author:       "Devin Atkin"      # Your name
+  discord:      "devinatkin"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
+  description:  "This Project Pretends to be an Image Sensor, It's not an Image Sensor"      # One line description of what your project does
+  language:     "Verilog" # other examples include Verilog, Amaranth, VHDL, etc
+  clock_hz:     50000       # Clock frequency in Hz (or 0 if not applicable)
+  picture: "docs/Logo.png" # A picture of your project, relative to the info.yaml file
+  how_it_works: |
+      This project simulates an image sensor. Provide an input which represents the the pixel values for current row and column (512 bits each).
+      Then the internals will simulate those light levels. The output will then be a series of packets representing the widths of the pixel outputs. This can then be re-recovered back into 
+  how_to_test:  |
+      Test Code will be provided in this repository. I will try and write this code both for an FPGA and for a Pi Pico.
+      I'll extend this with instructions for how to verify that the code is indeed functional. 
+  inputs:               
+    - DATA_IN1
+    - RCLK_1
+    - DATA_IN2
+    - RCLK_2
+  outputs:
+    - DATA_BUS_1_OUT_1
+    - DATA_BUS_1_OUT_2
+    - DATA_BUS_1_OUT_3
+    - DATA_BUS_1_OUT_4
+    - DATA_BUS_1_OUT_5
+    - DATA_BUS_1_OUT_6
+    - DATA_BUS_1_OUT_7
+    - DATA_BUS_1_OUT_8
+  bidirectional:
+    - DATA_BUS_2_IN_1
+    - DATA_BUS_2_IN_2
+    - DATA_BUS_2_IN_3
+    - DATA_BUS_2_IN_4
+    - DATA_BUS_2_IN_5
+    - DATA_BUS_2_IN_6
+    - DATA_BUS_2_IN_7
+    - DATA_BUS_2_IN_8
+
 project:
-  title:        ""      # Project title
-  author:       ""      # Your name
-  discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  title:        "Fast Readout Image Sensor Prototype"      # Project title
+  author:       "Devin Atkin"      # Your name
+  discord:      "devinatkin"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
+  description:  "This Project Pretends to be an Image Sensor, It's not an Image Sensor"      # One line description of what your project does
+  language:     "Verilog" # other examples include Verilog, Amaranth, VHDL, etc
+  clock_hz:     50000       # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
   tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_example"
+  top_module:  "tt_um_devinatkin_fastreadout"
   
   # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
-    - "project.v"
+    - "tt_um_devinatkin_fastreadout.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
+  ui[0]: "DATA_IN1"
+  ui[1]: "RCLK_1"
+  ui[2]: "DATA_IN2"
+  ui[3]: "RCLK_2"
   ui[4]: ""
   ui[5]: ""
   ui[6]: ""
   ui[7]: ""
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  uo[0]: "DATA_BUS_1_OUT_1"
+  uo[1]: "DATA_BUS_1_OUT_2"
+  uo[2]: "DATA_BUS_1_OUT_3"
+  uo[3]: "DATA_BUS_1_OUT_4"
+  uo[4]: "DATA_BUS_1_OUT_5"
+  uo[5]: "DATA_BUS_1_OUT_6"
+  uo[6]: "DATA_BUS_1_OUT_7"
+  uo[7]: "DATA_BUS_1_OUT_8"
 
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "DATA_BUS_2_IN_1"
+  uio[1]: "DATA_BUS_2_IN_2"
+  uio[2]: "DATA_BUS_2_IN_3"
+  uio[3]: "DATA_BUS_2_IN_4"
+  uio[4]: "DATA_BUS_2_IN_5"
+  uio[5]: "DATA_BUS_2_IN_6"
+  uio[6]: "DATA_BUS_2_IN_7"
+  uio[7]: "DATA_BUS_2_IN_8"
+
+
 
 # Do not change!
 yaml_version: 6
