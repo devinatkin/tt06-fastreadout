@@ -9,3 +9,8 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+
+src/sim_build
+src/__pycache__/
+src/__tinytapeout
+src/results.xml
