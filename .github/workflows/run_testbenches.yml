@@ -1,0 +1,36 @@
+name: Run Testbenches
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [
+          "tb_top"
+        ]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup environment
+      run: |
+        sudo apt-get update
+
+    - name: Install Icarus Verilog
+      run: |
+        sudo apt-get install -y iverilog
+
+    - name: Run individual testbenches
+      run: |
+        make ${{ matrix.target }}
+
+    - name: Cleanup
+      run: |
+        make clean
