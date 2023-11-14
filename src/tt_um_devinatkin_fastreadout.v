@@ -12,7 +12,7 @@ module tt_um_devinatkin_fastreadout
 
     // Initial Verilog Code (Basically Garbage)
     reg [7:0] sum;       // Sum of ui_in and uio_in
-    assign uio_out = sum; // Assign the sum to the output
+    assign uo_out = sum; // Assign the sum to the output
     
     // Configure uio_oe to set the uio_in as inputs (active low)
     assign uio_oe = 8'b0;
@@ -20,7 +20,7 @@ module tt_um_devinatkin_fastreadout
     // Clocked Adder Logic with Synchronous Reset
     always @(posedge clk) begin
         if (!rst_n) begin
-            uo_out <= 8'b0; // Synchronous reset
+            sum <= 8'b0;
         end else if (ena) begin
             sum <= ui_in + uio_in;  // Capture the sum if enabled
         end
