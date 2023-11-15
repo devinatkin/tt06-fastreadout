@@ -1,4 +1,5 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/run_testbenches/badge.svg)
+![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg)
+[![Run Testbenches](https://github.com/devinatkin/tt06-fastreadout/actions/workflows/run_testbenches.yml/badge.svg)](https://github.com/devinatkin/tt06-fastreadout/actions/workflows/run_testbenches.yml)
 
 # What is this Project?
 Thanks to the licensing and software issues associated the year of 2023 I got essentially zero work completed towards my thesis, work was completed but it went to waste due to issues outside my control. This project contains an attempt to recover some of that work by recreating it in a fully digital format. The original design is for an image sensor and therefore is inherently mixed signal. There will be two submissions to tiny tapeout, a fully digital version which simulates the analog functionaltiy and a small analog design which aims to match as close as possible to the digital design. 
