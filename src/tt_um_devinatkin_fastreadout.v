@@ -16,7 +16,8 @@ module tt_um_devinatkin_fastreadout
     
     // Configure uio_oe to set the uio_in as inputs (active low)
     assign uio_oe = 8'b0;
-
+    assign uio_out = 8'b0;
+    
     // Clocked Adder Logic with Synchronous Reset
     always @(posedge clk) begin
         if (!rst_n) begin
