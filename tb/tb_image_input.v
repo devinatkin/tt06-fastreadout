@@ -1,4 +1,4 @@
-module tb_image_input #(parameter IMAGE_SIZE = 1024, parameter IMAGE_FILE= "tb/output.txt", parameter OUTPUT_FILE = "tb/verilog_output.txt") ;
+module tb_image_input #(parameter IMAGE_SIZE = 1024, IMAGE_FILE= "tb/output.txt", OUTPUT_FILE = "tb/verilog_output.txt") ;
 
     // Parameters
     // Width of the shift register is 8-bits per pixel
@@ -47,7 +47,7 @@ module tb_image_input #(parameter IMAGE_SIZE = 1024, parameter IMAGE_FILE= "tb/o
         // Open the file
         file = $fopen(IMAGE_FILE, "r");
         if (file == 0) begin
-            $display("Error opening file");
+            $display("Error opening file: %s", IMAGE_FILE);
             $fatal;
         end
 
