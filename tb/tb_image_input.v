@@ -11,6 +11,7 @@ module tb_image_input #(parameter IMAGE_SIZE = 1024, parameter IMAGE_FILE= "tb/o
     reg load;
     reg [WIDTH-1:0] data_in;
     reg [7:0] temp;
+    reg [WIDTH-1:0] temp_out;
     // Outputs
     wire [WIDTH-1:0] data_out;
 
@@ -69,26 +70,39 @@ module tb_image_input #(parameter IMAGE_SIZE = 1024, parameter IMAGE_FILE= "tb/o
                     $display("Error reading file");
                     $fatal;
                 end
-                data_in <= {data_in[WIDTH-9:0], temp};
+                data_in = {data_in[WIDTH-9:0], temp};
+                
             end
 
             // Shift in the line
-            for (int j = 0; j < IMAGE_SIZE*8; j = j + 1) begin
+            for (int j = IMAGE_SIZE*8 - 1; j >= 0; j = j - 1) begin
                 // Shift in 1 into the ith position
                 shift_in = data_in[j];
                 #PERIOD;
             end
+
             // Load the line
             load = 1;
             #PERIOD;
             load = 0;
             // $display("Line # %d \n %b", i, data_out);
             // Write the line to the output file
-            for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
-                $fwrite(output_file, "%h ", data_out[j*8 +: 8]);
+
+
+            // Check that the data_out is correct i.e. it maches the data_in
+            if (data_out != data_in) begin
+                $display("Error: data_out does not match data_in");
+                $display("data_in: %b", data_in);
+                $display("data_out: %b", data_out);
+                $fatal;
             end
 
-            $display("Line # %d", i);
+            temp_out = data_out;
+            for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
+
+                $fwrite(output_file, "%h ", temp_out[7:0]);
+                temp_out = temp_out >> 8;
+            end
         end
 
 
