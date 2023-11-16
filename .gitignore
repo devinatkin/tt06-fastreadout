@@ -17,4 +17,5 @@ src/results.xml
 
 src/user_config.tcl
 tb/output.txt
+tb/verilog_output.txt
 sim_out
