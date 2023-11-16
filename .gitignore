@@ -16,4 +16,5 @@ src/__tinytapeout
 src/results.xml
 
 src/user_config.tcl
+tb/output.txt
 sim_out

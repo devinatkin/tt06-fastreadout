@@ -26,6 +26,10 @@ tb_shift_register:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/shift_register.v tb/tb_shift_register.v
 	$(VVP) $(OUT_DIR)/$@.vvp
 
+tb_image_input: 
+	$(IVL) -o $(OUT_DIR)/$@.vvp src/shift_register.v tb/tb_image_input.v
+	$(VVP) $(OUT_DIR)/$@.vvp
+
 clean:
 	@echo Cleaning up...
 	rm -rf $(OUT_DIR)

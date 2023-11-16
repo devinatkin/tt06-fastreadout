@@ -3,7 +3,6 @@ module shift_register #(parameter WIDTH = 512) (
     input wire reset_n,
     input wire shift_in,
     input wire load,
-    input wire [WIDTH-1:0] data_in,
     output reg [WIDTH-1:0] data_out
 );
 
@@ -20,10 +19,6 @@ module shift_register #(parameter WIDTH = 512) (
                 shift_reg <= {shift_reg[WIDTH-2:0], shift_in};
             end
         end
-    end
-
-    always @(posedge clk) begin
-
     end
 
 endmodule
