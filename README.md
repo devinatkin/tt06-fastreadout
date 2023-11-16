@@ -7,9 +7,13 @@ Thanks to the licensing and software issues associated the year of 2023 I got es
 Hopefully the final submission to this Repository will be an update with an associated paper... For now I need to complete this design. 
 
 ## Primary Design Components
-- Input Registers (512 bit + Shift Registers which represent the image data)
+- Input Registers (512 bit which represent the image data)
 - Pixel Array (64 + 64) Frequency Modulation Output modules setup to pretend to be a full 64x64 array of pixels.
 - Output Organizer Measures the Frequency Outputs from the 'Pixels' and outputs them from the chip acting as a basic router
+
+### Input Shift Registers
+The input shift registers are a 512 bit shift register which is used to store the image data. The data is clocked in serially and then clocked out in parallel. The data is clocked out in parallel to the sudo pixel array. (Each pixel in a column is represented by 8-bits in the shift register).
+
 
 
 # What is Tiny Tapeout?
