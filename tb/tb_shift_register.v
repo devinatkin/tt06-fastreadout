@@ -19,7 +19,6 @@ module tb_shift_register;
         .reset_n(reset_n),
         .shift_in(shift_in),
         .load(load),
-        .data_in(data_in),
         .data_out(data_out)
     );
 
@@ -34,7 +33,6 @@ module tb_shift_register;
         reset_n = 0;
         shift_in = 0;
         load = 0;
-        data_in = 0;
 
         // Wait for 100 ns for global reset to finish
         #100;
@@ -69,9 +67,6 @@ module tb_shift_register;
                 end
             end
             
-            
-            // Shift the 1 to the next position
-            data_in = {1'b0, data_in[WIDTH-2:0]};
             #PERIOD;
         end
 
