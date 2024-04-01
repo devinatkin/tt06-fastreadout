@@ -33,7 +33,7 @@ module frequency_module #(
 )(
     input wire CLK,
     input wire RST_N,
-    input wire [INPUT_BITS-1:0] INPUT,
+    input wire [INPUT_BITS-1:0] INPUT_VALUE,
     output reg FREQ_OUT
 );
 
@@ -53,7 +53,7 @@ module frequency_module #(
         .CLK(CLK),
         .RST_N(RST_N),
         .multiplicand(COUNTER_SET_STEP),
-        .multiplier(INPUT),
+        .multiplier(INPUT_VALUE),
         .product(counter_set_step)
     );
 

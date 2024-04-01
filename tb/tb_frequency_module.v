@@ -24,7 +24,7 @@ module frequency_module_tb;
     ) DUT (
         .CLK(CLK),
         .RST_N(RST_N),
-        .INPUT(INPUT),
+        .INPUT_VALUE(INPUT),
         .FREQ_OUT(FREQ_OUT)
     );
 
