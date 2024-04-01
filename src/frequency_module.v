@@ -28,7 +28,7 @@
 module frequency_module #(
     parameter CLOCK_FREQ = 50_000_000, // Clock Frequency in Hz
     parameter LOW_FREQ = 1_000,
-    parameter HIGH_FREQ = 20_000_000
+    parameter HIGH_FREQ = 20_000_000,
     parameter INPUT_BITS = 8
 )(
     input wire CLK,
@@ -39,6 +39,38 @@ module frequency_module #(
 
     localparam COUNTER_SIZE = $clog2(CLOCK_FREQ/LOW_FREQ);
     localparam MAX_COUNTER_VALUE = $floor(CLOCK_FREQ/LOW_FREQ);
-    localparam MIN_COUNTER_VALUE = $max()
+    localparam MIN_COUNTER_VALUE = $ceil(CLOCK_FREQ/HIGH_FREQ);
+    localparam COUNTER_SET_STEP = (MAX_COUNTER_VALUE - MIN_COUNTER_VALUE) / (2 ** INPUT_BITS);
+    reg [COUNTER_SIZE-1:0] counter;
+    reg [COUNTER_SIZE-1:0] counter_set;
+
+    reg [COUNTER_SIZE-1:0] counter_set_step;
+    
+    repeated_add_multiplier #(
+        .WIDTH_IN(COUNTER_SIZE),
+        .WIDTH_OUT(COUNTER_SIZE)
+    ) multiplier_inst (
+        .CLK(CLK),
+        .RST_N(RST_N),
+        .multiplicand(COUNTER_SET_STEP),
+        .multiplier(INPUT),
+        .product(counter_set_step)
+    );
+
+    always @(posedge CLK) begin
+        if(!RST_N) begin
+            counter <= 0;
+            counter_set <= 0;
+            FREQ_OUT <= 0;
+        end else begin
+            counter_set <= MAX_COUNTER_VALUE - counter_set_step;
+            if (counter == counter_set) begin
+                FREQ_OUT <= !FREQ_OUT;
+                counter <= 0;
+            end else begin
+                counter <= counter + 1;
+            end
+        end
+    end
 
 endmodule
