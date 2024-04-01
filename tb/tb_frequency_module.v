@@ -12,6 +12,9 @@ module frequency_module_tb;
     reg [INPUT_BITS-1:0] INPUT;
     wire FREQ_OUT;
 
+    integer i;
+    integer freq_change_count = 0;
+    reg prev_freq_out = 0;
     // Instantiate the DUT
     frequency_module #(
         .CLOCK_FREQ(CLOCK_FREQ),
@@ -38,18 +41,34 @@ module frequency_module_tb;
         RST_N = 1;
 
         // Light Level Variation Test
-        integer i;
         for(i = 0; i < 256; i = i + 1) begin
             INPUT = i;
-            #1000; // Wait time between light level changes
+            #2000; // Wait time between light level changes
+
+
+
+            while (freq_change_count < 10) begin
+                #10;
+                if (FREQ_OUT != prev_freq_out) begin
+                    freq_change_count = freq_change_count + 1;
+                    prev_freq_out = FREQ_OUT;
+                end
+            end
+            freq_change_count = 0;
         end
 
         $finish; // End simulation
     end
 
-    // Monitoring
-    initial begin
-        $monitor("Time=%t, Reset=%b, Light Level=%d, Freq Out=%b", $time, RST_N, INPUT, FREQ_OUT);
+    // Calculate the Output Frequency vs Light Level
+    time last_posedge_time = 0;
+    real time_in_seconds = 0;
+    always @(posedge FREQ_OUT) begin
+        if (last_posedge_time != 0) begin
+            time_in_seconds = ($time - last_posedge_time) / 1e9; // Adjust this based on your timescale
+            $display("Light %d, Time=%f, Frequency=%f", INPUT, $realtime, 1.0 / time_in_seconds);
+        end
+        last_posedge_time = $time;
     end
 
 endmodule
