@@ -1,6 +1,4 @@
-module frequency_counter #(
-    parameter CLOCK_FREQ = 50_000_000  // System clock frequency in Hz
-)(
+module frequency_counter (
     input wire CLK,          // System Clock
     input wire RST_N,        // Reset, active low
     input wire FREQ_IN,     // Frequency output from frequency_module to measure

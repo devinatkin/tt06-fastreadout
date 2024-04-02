@@ -38,16 +38,16 @@ module frequency_module #(
 );
 
     localparam COUNTER_SIZE = $clog2(CLOCK_FREQ/LOW_FREQ);
-    localparam MAX_COUNTER_VALUE = $floor(CLOCK_FREQ/LOW_FREQ);
-    localparam MIN_COUNTER_VALUE = $ceil(CLOCK_FREQ/HIGH_FREQ);
-    localparam COUNTER_SET_STEP = (MAX_COUNTER_VALUE - MIN_COUNTER_VALUE) / (2 ** INPUT_BITS);
+    localparam integer MAX_COUNTER_VALUE = $rtoi($floor(CLOCK_FREQ/LOW_FREQ));
+    localparam integer MIN_COUNTER_VALUE = $rtoi($ceil(CLOCK_FREQ/HIGH_FREQ));
+    localparam [7:0] COUNTER_SET_STEP = $rtoi((MAX_COUNTER_VALUE - MIN_COUNTER_VALUE) / (2 ** INPUT_BITS));
     reg [COUNTER_SIZE-1:0] counter;
     reg [COUNTER_SIZE-1:0] counter_set;
 
     reg [COUNTER_SIZE-1:0] counter_set_step;
     
     repeated_add_multiplier #(
-        .WIDTH_IN(COUNTER_SIZE),
+        .WIDTH_IN(INPUT_BITS),
         .WIDTH_OUT(COUNTER_SIZE)
     ) multiplier_inst (
         .CLK(CLK),

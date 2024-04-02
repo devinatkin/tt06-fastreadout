@@ -11,7 +11,7 @@ OUT_DIR = sim_out
 $(shell mkdir -p $(OUT_DIR))
 
 # All source files (excluding testbenches)
-SOURCES = src/tt_um_devinatkin_fastreadout.v src/shift_register.v src/repeated_add_multiplier.v src/frequency_module.v
+SOURCES = src/tt_um_devinatkin_fastreadout.v src/shift_register.v src/repeated_add_multiplier.v src/frequency_module.v src/frequency_counter.v
 
 # Phony targets
 .PHONY: all clean

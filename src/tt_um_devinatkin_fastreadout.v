@@ -20,6 +20,9 @@ module tt_um_devinatkin_fastreadout
     parameter HIGH_FREQ = 20_000_000;
     parameter INPUT_BITS = 8;
 
+    parameter counter_bits = 32;
+    parameter counter_variable_size = counter_bits * pixels;
+
     // Row Shift Register Inputs
     wire DATA_IN1 = ui_in[0];
     wire RCLK_1 = ui_in[1];
@@ -37,6 +40,14 @@ module tt_um_devinatkin_fastreadout
     // Column Shift Register - Data Output
     wire [SHIFT_WIDTH-1:0] COL_DATA;
     wire [pixels-1:0] PIXEL_COL_DATA;
+
+    wire [counter_variable_size-1:0] COL_TIME_HIGH;
+    wire [counter_variable_size-1:0] COL_TIME_LOW;
+    wire [counter_variable_size-1:0] COL_PERIOD;
+
+    wire [counter_variable_size-1:0] ROW_TIME_HIGH;
+    wire [counter_variable_size-1:0] ROW_TIME_LOW;
+    wire [counter_variable_size-1:0] ROW_PERIOD;
 
     // Initial Verilog Code (Basically Garbage)
     reg [7:0] sum;       // Sum of ui_in and uio_in
@@ -79,21 +90,19 @@ module tt_um_devinatkin_fastreadout
                 .INPUT_BITS(INPUT_BITS)
              
             ) pretend_row_pixel (
-                .CLK(CLK),
-                .RST_N(RST_N),
-                .INPUT_VALUE(ROW_DATA[i:i+(bits_per_pixel-1)]),
-                .freq_out(PIXEL_ROW_DATA[i])
+                .CLK(clk),
+                .RST_N(rst_n),
+                .INPUT_VALUE(ROW_DATA[(i*bits_per_pixel)+(bits_per_pixel-1):(i*bits_per_pixel)]),
+                .FREQ_OUT(PIXEL_ROW_DATA[i])
             );
 
-            frequency_counter #(
-                .CLOCK_FREQ(CLOCK_FREQ)
-            ) row_counter (
-                .CLK(CLK),
-                .RST_N(RST_N),
+            frequency_counter row_counter (
+                .CLK(clk),
+                .RST_N(rst_n),
                 .FREQ_IN(PIXEL_ROW_DATA[i]),
-                .TIME_HIGH(),
-                .TIME_LOW(),
-                .PERIOD()
+                .TIME_HIGH(ROW_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                .TIME_LOW(ROW_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                .PERIOD(ROW_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
             );
         end
     endgenerate
@@ -129,21 +138,19 @@ module tt_um_devinatkin_fastreadout
                 .HIGH_FREQ(HIGH_FREQ),
                 .INPUT_BITS(INPUT_BITS)
             ) pretend_col_pixel (
-                .CLK(CLK),
-                .RST_N(RST_N),
-                .INPUT_VALUE(COL_DATA[i:i+(bits_per_pixel-1)]),
-                .freq_out(PIXEL_COL_DATA[i])
+                .CLK(clk),
+                .RST_N(rst_n),
+                .INPUT_VALUE(COL_DATA[(i*bits_per_pixel)+(bits_per_pixel-1):(i*bits_per_pixel)]),
+                .FREQ_OUT(PIXEL_COL_DATA[i])
             );
 
-            frequency_counter #(
-                .CLOCK_FREQ(CLOCK_FREQ)
-            ) col_counter (
-                .CLK(CLK),
-                .RST_N(RST_N),
+            frequency_counter col_counter (
+                .CLK(clk),
+                .RST_N(rst_n),
                 .FREQ_IN(PIXEL_COL_DATA[i]),
-                .TIME_HIGH(),
-                .TIME_LOW(),
-                .PERIOD()
+                .TIME_HIGH(COL_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                .TIME_LOW(COL_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                .PERIOD(COL_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
             );
         end
 
@@ -154,7 +161,7 @@ module tt_um_devinatkin_fastreadout
         if (!rst_n) begin
             sum <= 8'b0;
         end else if (ena) begin
-            sum <= ui_in + uio_in;  // Capture the sum if enabled
+            sum <= sum + 1;
         end
     end
 endmodule
