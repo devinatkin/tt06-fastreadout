@@ -16,7 +16,7 @@ SOURCES = src/tt_um_devinatkin_fastreadout.v src/shift_register.v src/repeated_a
 # Phony targets
 .PHONY: all clean
 
-all: tb_top tb_shift_register tb_image_input tb_repeated_add_multiplier tb_frequency_module
+all: tb_top tb_shift_register tb_image_input tb_repeated_add_multiplier tb_frequency_module tb_frequency_counter
 
 tb_top: 
 	$(IVL) -o $(OUT_DIR)/$@.vvp $(SOURCES) tb/tb_top.v
@@ -42,6 +42,10 @@ tb_frequency_module:
 
 tb_frequency_counter:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_counter.v tb/tb_frequency_counter.v
+	$(VVP) $(OUT_DIR)/$@.vvp
+
+tb_frequency_measure:
+	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_counter.v src/frequency_module.v src/repeated_add_multiplier.v tb/tb_frequency_measure.v
 	$(VVP) $(OUT_DIR)/$@.vvp
 
 clean:
