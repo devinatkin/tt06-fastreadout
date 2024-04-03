@@ -20,3 +20,5 @@ tb/output.txt
 tb/verilog_output.txt
 sim_out
 sim_out/*
+
+*.jpg

@@ -37,10 +37,10 @@ module frequency_module #(
     output reg FREQ_OUT
 );
 
-    localparam COUNTER_SIZE = $clog2(CLOCK_FREQ/LOW_FREQ);
-    localparam integer MAX_COUNTER_VALUE = $rtoi($floor(CLOCK_FREQ/LOW_FREQ));
-    localparam integer MIN_COUNTER_VALUE = $rtoi($ceil(CLOCK_FREQ/HIGH_FREQ));
-    localparam [7:0] COUNTER_SET_STEP = $rtoi((MAX_COUNTER_VALUE - MIN_COUNTER_VALUE) / (2 ** INPUT_BITS));
+    localparam COUNTER_SIZE = $clog2($rtoi(CLOCK_FREQ/(2*LOW_FREQ)));
+    localparam integer MAX_COUNTER_VALUE = $rtoi($floor(CLOCK_FREQ/(2*LOW_FREQ)));
+    localparam integer MIN_COUNTER_VALUE = $rtoi($floor(CLOCK_FREQ/(2*HIGH_FREQ)));
+    localparam [INPUT_BITS-1:0] COUNTER_SET_STEP = $rtoi((MAX_COUNTER_VALUE - MIN_COUNTER_VALUE) / ((2 ** INPUT_BITS)-1));
     reg [COUNTER_SIZE-1:0] counter;
     reg [COUNTER_SIZE-1:0] counter_set;
 
@@ -62,10 +62,10 @@ module frequency_module #(
             counter <= 0;
             counter_set <= 0;
             FREQ_OUT <= 0;
-        end else begin
-            counter_set <= MAX_COUNTER_VALUE - counter_set_step;
+        end else begin    
             if (counter == counter_set) begin
                 FREQ_OUT <= !FREQ_OUT;
+                counter_set <= MAX_COUNTER_VALUE - counter_set_step;
                 counter <= 0;
             end else begin
                 counter <= counter + 1;

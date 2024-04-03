@@ -16,7 +16,7 @@ module tt_um_devinatkin_fastreadout
 
     // Frequency Module Parameters
     parameter CLOCK_FREQ = 50_000_000;
-    parameter LOW_FREQ = 1_000;
+    parameter LOW_FREQ = 1_000.3;
     parameter HIGH_FREQ = 20_000_000;
     parameter INPUT_BITS = 8;
 

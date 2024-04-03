@@ -3,7 +3,7 @@
 module frequency_module_tb;
 
     parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
-    parameter LOW_FREQ = 1_000;
+    parameter LOW_FREQ = 1_000.333;
     parameter HIGH_FREQ = 20_000_000;
     parameter INPUT_BITS = 8;
 
@@ -43,11 +43,11 @@ module frequency_module_tb;
         // Light Level Variation Test
         for(i = 0; i < 256; i = i + 1) begin
             INPUT = i;
-            #2000; // Wait time between light level changes
+            #4000; // Wait time between light level changes
 
 
 
-            while (freq_change_count < 10) begin
+            while (freq_change_count < 12) begin
                 #10;
                 if (FREQ_OUT != prev_freq_out) begin
                     freq_change_count = freq_change_count + 1;
@@ -63,12 +63,21 @@ module frequency_module_tb;
     // Calculate the Output Frequency vs Light Level
     time last_posedge_time = 0;
     real time_in_seconds = 0;
+    integer file;
+
+    initial begin
+        file = $fopen("sim_out/frequency_module_tb.txt", "w");
+    end
     always @(posedge FREQ_OUT) begin
         if (last_posedge_time != 0) begin
-            time_in_seconds = ($time - last_posedge_time) / 1e9; // Adjust this based on your timescale
-            $display("Light %d, Time=%f, Frequency=%f", INPUT, $realtime, 1.0 / time_in_seconds);
+            time_in_seconds = ($time - last_posedge_time) / 1e9;
+            $fwrite(file, "Light %d, Time=%f, Frequency=%f\n", INPUT, $realtime, 1.0 / time_in_seconds);
         end
         last_posedge_time = $time;
     end
+    final begin
+        $fclose(file);
+    end
+
 
 endmodule

@@ -24,8 +24,15 @@ module repeated_add_multiplier #(
 
             if (inner_counter == 0) begin
                 product <= sum; // Set the product to the sum
-                sum <= 0; // Reset the sum
-                inner_counter <= multiplier; // Set the inner counter to the multiplier
+
+                // If Multiplier or Multiplicand is zero then the sum will be zero as well as inner_counter
+                if (multiplier == 0 || multiplicand == 0) begin
+                    sum <= 0;
+                    inner_counter <= 0;
+                end else begin
+                    sum <= multiplicand;
+                    inner_counter <= multiplier-1;
+                end
 
             end else begin
                 sum <= sum + multiplicand;
