@@ -5,7 +5,7 @@ module tb_frequency_counter();
     // Parameters
     parameter CLOCK_FREQ = 50_000_000; // 50 MHz
     parameter CLOCK_PERIOD = 1000 / (CLOCK_FREQ / 1_000_000); // Clock period in nanoseconds
-    
+    parameter COUNTER_BITS = 16; // Number of bits in the counter
     // Inputs
     reg CLK;
     reg RST_N;
@@ -21,7 +21,7 @@ module tb_frequency_counter();
     integer previous_j;
     // Instantiate the Unit Under Test (UUT)
     frequency_counter #(
-        .CLOCK_FREQ(CLOCK_FREQ)
+        .COUNTER_BITS(COUNTER_BITS)
     ) uut (
         .CLK(CLK),
         .RST_N(RST_N),

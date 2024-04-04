@@ -1,14 +1,18 @@
+`timescale 1ns / 1ps
+
 module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FILE= "tb/output.txt", OUTPUT_FILE = "tb/verilog_output.txt") ;
 
     // Parameters
     // Width of the shift register is 8-bits per pixel
     parameter INPUT_BITS = 8;
-    parameter counter_bits = 32;
+    parameter counter_bits = 16;
     localparam WIDTH = IMAGE_SIZE * INPUT_BITS;
     parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
-    parameter LOW_FREQ = 1_000.333;
+    parameter LOW_FREQ = 10_001;
     parameter HIGH_FREQ = 20_000_000;
     
+    // Clock period definitions
+    parameter PERIOD = 20;
 
     // Inputs
     reg clk;
@@ -54,7 +58,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
             ) freq_module (
                 .CLK(clk),
                 .RST_N(reset_n),
-                .INPUT_VALUE(data_out[i*INPUT_BITS +: INPUT_BITS]),
+                .INPUT_VALUE(data_out[(INPUT_BITS*i) + (INPUT_BITS-1) : (INPUT_BITS*i)]),
                 .FREQ_OUT(freq_out_values[i])
             );
         end
@@ -63,7 +67,9 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     // Instantiate the Frequency Counter Modules
     generate
         for (i = 0; i < IMAGE_SIZE; i = i + 1) begin : freq_counter_inst
-               frequency_counter freq_count (
+                frequency_counter #(
+                    .COUNTER_BITS(counter_bits)
+                    ) freq_count (
                     .CLK(clk),
                     .RST_N(reset_n),
                     .FREQ_IN(freq_out_values[i]),
@@ -75,9 +81,6 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
 
     endgenerate
 
-    // Clock period definitions
-    parameter PERIOD = 10;
-
     // Initial stimulus
     initial begin
         $display("Image Output Testbench started successfully");
@@ -88,8 +91,8 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
         load = 0;
         data_in = 0;
 
-        // Wait for 100 ns for global reset to finish
-        #100;
+        // Wait for 40 ns for global reset to finish
+        #40;
         reset_n = 1;
 
         // Open the file
@@ -134,7 +137,12 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
             load = 1;
             #PERIOD;
             load = 0;
-            #(PERIOD*1024);
+            
+            $display("Simulating line %d", i);
+            // Wait for all the freq_out to complete (with a lowest frequency being 8khz, wait at least 0.5ms)
+            #(500_000);
+
+            $display("Finished simulating line %d", i);
             // Write the line to the output file
 
 
@@ -150,11 +158,14 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
             // Output the TIME_PERIOD values to the output file
             temp_out = TIME_PERIOD;
             $display("Writing Line # %d", i);
-            for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
 
+
+            $fwrite(output_file, "Line # %d: ", i);
+            for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
                 $fwrite(output_file, "%h ", temp_out[(counter_bits-1):0]);
                 temp_out = temp_out >> counter_bits;
             end
+            $fwrite(output_file, "\n");
             $display("Finished # %d \n", i);
         end
 
@@ -165,6 +176,12 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     end
 
     // Clock generation
-    always #5 clk = ~clk;
+    always #10 clk = ~clk;
+
+    // Dump variables to VCD file
+    // initial begin
+    //     $dumpfile("tb_image_input_frequency_measure.vcd");
+    //     $dumpvars(0, tb_image_input_frequency_measure);
+    // end
 
 endmodule

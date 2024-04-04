@@ -1,16 +1,18 @@
-module frequency_counter (
+module frequency_counter #(
+    parameter COUNTER_BITS = 32
+)(
     input wire CLK,          // System Clock
     input wire RST_N,        // Reset, active low
     input wire FREQ_IN,     // Frequency output from frequency_module to measure
-    output reg [31:0] TIME_HIGH,  // Time in high state, in clock cycles
-    output reg [31:0] TIME_LOW,   // Time in low state, in clock cycles
-    output reg [31:0] PERIOD      // Period of the frequency signal, in clock cycles
+    output reg [COUNTER_BITS-1:0] TIME_HIGH,  // Time in high state, in clock cycles
+    output reg [COUNTER_BITS-1:0] TIME_LOW,   // Time in low state, in clock cycles
+    output reg [COUNTER_BITS-1:0] PERIOD      // Period of the frequency signal, in clock cycles
 );
 
 // Internal signals to keep track of the current state and previous state of FREQ_IN
 reg previous_freq_in;
 // Temporal registers to calculate times and period
-reg [31:0] high_counter, low_counter;
+reg [COUNTER_BITS-1:0] high_counter, low_counter;
 
 always @(posedge CLK) begin
     if (!RST_N) begin
