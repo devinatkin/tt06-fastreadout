@@ -13,7 +13,12 @@ jobs:
       fail-fast: false
       matrix:
         target: [
-          "tb_top"
+          "tb_shift_register",
+          "tb_image_input",
+          "tb_repeated_add_multiplier",
+          "tb_frequency_module",
+          "tb_frequency_counter",
+          "tb_frequency_measure"
         ]
     steps:
     - name: Checkout repository
@@ -26,6 +31,10 @@ jobs:
     - name: Install Icarus Verilog
       run: |
         sudo apt-get install -y iverilog
+
+    - name: Install Pip Requirements
+      run: |
+        pip install -r requirements.txt
 
     - name: Run individual testbenches
       run: |
