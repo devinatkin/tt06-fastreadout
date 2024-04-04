@@ -8,7 +8,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     parameter counter_bits = 15;
     localparam WIDTH = IMAGE_SIZE * INPUT_BITS;
     parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
-    parameter LOW_FREQ = 10_001;
+    parameter LOW_FREQ = 1_000.3;
     parameter HIGH_FREQ = 20_000_000;
     
     // Clock period definitions
@@ -139,8 +139,8 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
             load = 0;
             
             $display("Simulating line %d", i);
-            // Wait for all the freq_out to complete (with a lowest frequency being 8khz, wait at least 0.5ms)
-            #(500_000);
+            // Wait for all the freq_out to complete (with a lowest frequency being 1khz, wait at least 1ms)
+            #(1_000_000);
 
             $display("Finished simulating line %d", i);
             // Write the line to the output file

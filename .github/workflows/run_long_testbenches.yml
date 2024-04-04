@@ -1,0 +1,41 @@
+name: Run Long Running Testbenches
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: self-hosted
+    timeout-minutes: 2000
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [
+            "tb_image_input_frequency_measure"
+        ]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # - name: Setup environment
+    #   run: |
+    #     sudo apt-get update
+
+    # - name: Install Icarus Verilog
+    #   run: |
+    #     sudo apt-get install -y iverilog
+
+    # - name: Install Pip Requirements
+    #   run: |
+    #     pip install -r requirements.txt
+
+    - name: Run individual long running testbenches
+      run: |
+        make ${{ matrix.target }}
+
+    - name: Cleanup
+      run: |
+        make clean

@@ -18,8 +18,7 @@ jobs:
           "tb_repeated_add_multiplier",
           "tb_frequency_module",
           "tb_frequency_counter",
-          "tb_frequency_measure",
-          "tb_image_input_frequency_measure"
+          "tb_frequency_measure"
         ]
     steps:
     - name: Checkout repository
