@@ -5,7 +5,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     // Parameters
     // Width of the shift register is 8-bits per pixel
     parameter INPUT_BITS = 8;
-    parameter counter_bits = 16;
+    parameter counter_bits = 15;
     localparam WIDTH = IMAGE_SIZE * INPUT_BITS;
     parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
     parameter LOW_FREQ = 10_001;
