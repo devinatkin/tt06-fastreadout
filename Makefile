@@ -53,6 +53,10 @@ tb_frequency_measure:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_counter.v src/frequency_module.v src/repeated_add_multiplier.v tb/tb_frequency_measure.v
 	$(VVP) $(OUT_DIR)/$@.vvp
 
+tb_output_parallel_to_serial:
+	$(IVL) -o $(OUT_DIR)/$@.vvp src/output_parallel_to_serial.v tb/tb_output_parallel_to_serial.v
+	$(VVP) $(OUT_DIR)/$@.vvp
+
 clean:
 	@echo Cleaning up...
 	rm -rf $(OUT_DIR)

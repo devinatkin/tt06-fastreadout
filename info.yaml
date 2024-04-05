@@ -35,24 +35,23 @@ pinout:
   ui[7]: ""
 
   # Outputs
-  uo[0]: "DATA_BUS_1_OUT_1"
-  uo[1]: "DATA_BUS_1_OUT_2"
-  uo[2]: "DATA_BUS_1_OUT_3"
-  uo[3]: "DATA_BUS_1_OUT_4"
-  uo[4]: "DATA_BUS_1_OUT_5"
-  uo[5]: "DATA_BUS_1_OUT_6"
-  uo[6]: "DATA_BUS_1_OUT_7"
-  uo[7]: "DATA_BUS_1_OUT_8"
+  uo[0]: "DATA_BUS_COL_OUT[0]"
+  uo[1]: "DATA_BUS_COL_OUT[1]"
+  uo[2]: "DATA_BUS_COL_OUT[2]"
+  uo[3]: "DATA_BUS_COL_OUT[3]"
+  uo[4]: "DATA_BUS_COL_OUT[4]"
+  uo[5]: "DATA_BUS_COL_OUT[5]"
+  uo[6]: "DATA_BUS_COL_OUT[6]"
+  uo[7]: "DATA_BUS_COL_OUT[7]"
 
   # Bidirectional pins
-  uio[0]: "DATA_BUS_2_IN_1"
-  uio[1]: "DATA_BUS_2_IN_2"
-  uio[2]: "DATA_BUS_2_IN_3"
-  uio[3]: "DATA_BUS_2_IN_4"
-  uio[4]: "DATA_BUS_2_IN_5"
-  uio[5]: "DATA_BUS_2_IN_6"
-  uio[6]: "DATA_BUS_2_IN_7"
-  uio[7]: "DATA_BUS_2_IN_8"
+  uio[0]: "DATA_BUS_ROW_IN[0]"
+  uio[1]: "DATA_BUS_ROW_IN[1]"
+  uio[2]: "DATA_BUS_ROW_IN[2]"
+  uio[3]: "DATA_BUS_ROW_IN[3]"
+  uio[4]: "DATA_BUS_ROW_IN[4]"
+  uio[6]: "DATA_BUS_ROW_IN[6]"
+  uio[7]: "DATA_BUS_ROW_IN[7]"
 
 
 
