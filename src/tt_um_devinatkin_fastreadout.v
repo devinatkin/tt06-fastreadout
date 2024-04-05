@@ -9,8 +9,8 @@ module tt_um_devinatkin_fastreadout
     input  logic       clk,      // clock
     input  logic       rst_n     // reset_n - low to reset
 );
-    // 8-bits per pixel, 128 pixels
-    localparam pixels = 128;
+    // 8-bits per pixel, 64 pixels
+    localparam pixels = 64;
     localparam bits_per_pixel = 8;
     localparam SHIFT_WIDTH = pixels * bits_per_pixel;
 
@@ -20,8 +20,10 @@ module tt_um_devinatkin_fastreadout
     parameter HIGH_FREQ = 20_000_000;
     parameter INPUT_BITS = 8;
 
-    parameter counter_bits = 32;
+    parameter counter_bits = 16;
     parameter counter_variable_size = counter_bits * pixels;
+    parameter number_of_outputs_for_rc = 8;
+
 
     // Row Shift Register Inputs
     wire DATA_IN1 = ui_in[0];
@@ -49,13 +51,12 @@ module tt_um_devinatkin_fastreadout
     wire [counter_variable_size-1:0] ROW_TIME_LOW;
     wire [counter_variable_size-1:0] ROW_PERIOD;
 
-    // Initial Verilog Code (Basically Garbage)
-    reg [7:0] sum;       // Sum of ui_in and uio_in
-    assign uo_out = sum; // Assign the sum to the output
-    
-    // Configure uio_oe to set the uio_in as inputs (active low)
-    assign uio_oe = 8'b0;
-    assign uio_out = 8'b0;
+    wire [7:0] DATA_BUS_COL_OUT;
+    wire [7:0] DATA_BUS_ROW_OUT;
+    // Configure uio_oe to set the uio_s (active low)
+    assign uio_oe = 8'b11111111;
+    assign uo_out = DATA_BUS_COL_OUT;
+    assign uio_out = DATA_BUS_ROW_OUT;
     
 
     // Row Data Flow Path
@@ -96,7 +97,9 @@ module tt_um_devinatkin_fastreadout
                 .FREQ_OUT(PIXEL_ROW_DATA[i])
             );
 
-            frequency_counter row_counter (
+            frequency_counter #(
+                .COUNTER_BITS(counter_bits)
+            ) row_counter (
                 .CLK(clk),
                 .RST_N(rst_n),
                 .FREQ_IN(PIXEL_ROW_DATA[i]),
@@ -144,7 +147,9 @@ module tt_um_devinatkin_fastreadout
                 .FREQ_OUT(PIXEL_COL_DATA[i])
             );
 
-            frequency_counter col_counter (
+            frequency_counter #(
+                .COUNTER_BITS(counter_bits)
+            ) col_counter (
                 .CLK(clk),
                 .RST_N(rst_n),
                 .FREQ_IN(PIXEL_COL_DATA[i]),
@@ -153,15 +158,34 @@ module tt_um_devinatkin_fastreadout
                 .PERIOD(COL_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
             );
         end
+    endgenerate
+    // Output Column Periods to 8 Column Output Pins (Pixels/ Number of Outputs) Gives the number of parallel to serial outputs
+    // Output Row Periods to 8 Row Output Pins (Pixels/ Number of Outputs) Gives the number of parallel to serial outputs
+    // Slices will be Number of Pixels / Number of Outputs Pixels per output, and each pixel produces counter bits of data
+    localparam pixels_per_output = pixels / number_of_outputs_for_rc;
+    localparam bits_per_output = counter_bits * pixels_per_output;
+    generate
+        for (i = 0; i < 8; i = i + 1) begin : output_loop
+            output_parallel_to_serial #(
+                .WIDTH_INPUT(bits_per_output)
+            ) output_inst_col (
+                .CLK(clk),
+                .RST_N(rst_n),
+                .data_in({COL_PERIOD[(i*bits_per_output)+(bits_per_output-1):(i*bits_per_output)]}),
+                .data_out(DATA_BUS_COL_OUT[i])
+            );
+
+            output_parallel_to_serial #(
+                .WIDTH_INPUT(bits_per_output)
+            ) output_inst_row (
+                .CLK(clk),
+                .RST_N(rst_n),
+                .data_in({ROW_PERIOD[(i*bits_per_output)+(bits_per_output-1):(i*bits_per_output)]}),
+                .data_out(DATA_BUS_ROW_OUT[i])
+            );
+        end
 
     endgenerate
 
-    // Clocked Adder Logic with Synchronous Reset
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            sum <= 8'b0;
-        end else if (ena) begin
-            sum <= sum + 1;
-        end
-    end
+
 endmodule
