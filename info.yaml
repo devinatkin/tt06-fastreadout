@@ -21,6 +21,7 @@ project:
     - "frequency_module.v"
     - "shift_register.v"
     - "repeated_add_multiplier.v"
+    - "output_parallel_to_serial.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
@@ -50,6 +51,7 @@ pinout:
   uio[2]: "DATA_BUS_ROW_IN[2]"
   uio[3]: "DATA_BUS_ROW_IN[3]"
   uio[4]: "DATA_BUS_ROW_IN[4]"
+  uio[5]: "DATA_BUS_ROW_IN[5]"
   uio[6]: "DATA_BUS_ROW_IN[6]"
   uio[7]: "DATA_BUS_ROW_IN[7]"
 
