@@ -35,30 +35,31 @@ module tt_um_devinatkin_fastreadout
     wire [pixels-1:0] PIXEL_ROW_DATA;
 
     // Column Shift Register Inputs
-    wire DATA_IN2 = ui_in[3];
-    wire RCLK_2 = ui_in[4];
-    wire LOAD_2 = ui_in[5];
+    // wire DATA_IN2 = ui_in[3];
+    // wire RCLK_2 = ui_in[4];
+    // wire LOAD_2 = ui_in[5];
 
     // Column Shift Register - Data Output
-    wire [SHIFT_WIDTH-1:0] COL_DATA;
-    wire [pixels-1:0] PIXEL_COL_DATA;
+    // wire [SHIFT_WIDTH-1:0] COL_DATA;
+    // wire [pixels-1:0] PIXEL_COL_DATA;
 
-    wire [counter_variable_size-1:0] COL_TIME_HIGH;
-    wire [counter_variable_size-1:0] COL_TIME_LOW;
-    wire [counter_variable_size-1:0] COL_PERIOD;
+    // wire [counter_variable_size-1:0] COL_TIME_HIGH;
+    // wire [counter_variable_size-1:0] COL_TIME_LOW;
+    // wire [counter_variable_size-1:0] COL_PERIOD;
 
     wire [counter_variable_size-1:0] ROW_TIME_HIGH;
     wire [counter_variable_size-1:0] ROW_TIME_LOW;
     wire [counter_variable_size-1:0] ROW_PERIOD;
 
-    wire [7:0] DATA_BUS_COL_OUT;
+    // wire [7:0] DATA_BUS_COL_OUT;
     wire [7:0] DATA_BUS_ROW_OUT;
     // Configure uio_oe to set the uio_s (active low)
     assign uio_oe = 8'b11111111;
-    assign uo_out = DATA_BUS_COL_OUT;
+    // assign uo_out = DATA_BUS_COL_OUT;
     assign uio_out = DATA_BUS_ROW_OUT;
-    
-
+    assign uo_out = DATA_BUS_ROW_OUT;
+    localparam pixels_per_output = pixels / number_of_outputs_for_rc;
+    localparam bits_per_output = counter_bits * pixels_per_output;
     // Row Data Flow Path
     // Outside of the chip
     // - Data is shifted in to the row shift register
@@ -125,55 +126,54 @@ module tt_um_devinatkin_fastreadout
     // - The output module will take the time high, time low, and period of the frequency signal
     // - The output module will make them available on the chip output pins
 
-    shift_register #(.WIDTH(SHIFT_WIDTH)) Col_Register_input (
-        .clk(RCLK_2),
-        .reset_n(rst_n),
-        .shift_in(DATA_IN2),
-        .load(LOAD_2),
-        .data_out(COL_DATA)
-    );
+    // shift_register #(.WIDTH(SHIFT_WIDTH)) Col_Register_input (
+    //     .clk(RCLK_2),
+    //     .reset_n(rst_n),
+    //     .shift_in(DATA_IN2),
+    //     .load(LOAD_2),
+    //     .data_out(COL_DATA)
+    // );
 
-    generate
-        for (i = 0; i < pixels; i = i + 1) begin : col_loop
-            frequency_module #(
-                .CLOCK_FREQ(CLOCK_FREQ),
-                .LOW_FREQ(LOW_FREQ),
-                .HIGH_FREQ(HIGH_FREQ),
-                .INPUT_BITS(INPUT_BITS)
-            ) pretend_col_pixel (
-                .CLK(clk),
-                .RST_N(rst_n),
-                .INPUT_VALUE(COL_DATA[(i*bits_per_pixel)+(bits_per_pixel-1):(i*bits_per_pixel)]),
-                .FREQ_OUT(PIXEL_COL_DATA[i])
-            );
+    // generate
+    //     for (i = 0; i < pixels; i = i + 1) begin : col_loop
+    //         frequency_module #(
+    //             .CLOCK_FREQ(CLOCK_FREQ),
+    //             .LOW_FREQ(LOW_FREQ),
+    //             .HIGH_FREQ(HIGH_FREQ),
+    //             .INPUT_BITS(INPUT_BITS)
+    //         ) pretend_col_pixel (
+    //             .CLK(clk),
+    //             .RST_N(rst_n),
+    //             .INPUT_VALUE(COL_DATA[(i*bits_per_pixel)+(bits_per_pixel-1):(i*bits_per_pixel)]),
+    //             .FREQ_OUT(PIXEL_COL_DATA[i])
+    //         );
 
-            frequency_counter #(
-                .COUNTER_BITS(counter_bits)
-            ) col_counter (
-                .CLK(clk),
-                .RST_N(rst_n),
-                .FREQ_IN(PIXEL_COL_DATA[i]),
-                .TIME_HIGH(COL_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
-                .TIME_LOW(COL_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
-                .PERIOD(COL_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
-            );
-        end
-    endgenerate
+    //         frequency_counter #(
+    //             .COUNTER_BITS(counter_bits)
+    //         ) col_counter (
+    //             .CLK(clk),
+    //             .RST_N(rst_n),
+    //             .FREQ_IN(PIXEL_COL_DATA[i]),
+    //             .TIME_HIGH(COL_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+    //             .TIME_LOW(COL_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+    //             .PERIOD(COL_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
+    //         );
+    //     end
+    // endgenerate
     // Output Column Periods to 8 Column Output Pins (Pixels/ Number of Outputs) Gives the number of parallel to serial outputs
     // Output Row Periods to 8 Row Output Pins (Pixels/ Number of Outputs) Gives the number of parallel to serial outputs
     // Slices will be Number of Pixels / Number of Outputs Pixels per output, and each pixel produces counter bits of data
-    localparam pixels_per_output = pixels / number_of_outputs_for_rc;
-    localparam bits_per_output = counter_bits * pixels_per_output;
+
     generate
         for (i = 0; i < 8; i = i + 1) begin : output_loop
-            output_parallel_to_serial #(
-                .WIDTH_INPUT(bits_per_output)
-            ) output_inst_col (
-                .CLK(clk),
-                .RST_N(rst_n),
-                .data_in({COL_PERIOD[(i*bits_per_output)+(bits_per_output-1):(i*bits_per_output)]}),
-                .data_out(DATA_BUS_COL_OUT[i])
-            );
+            // output_parallel_to_serial #(
+            //     .WIDTH_INPUT(bits_per_output)
+            // ) output_inst_col (
+            //     .CLK(clk),
+            //     .RST_N(rst_n),
+            //     .data_in({COL_PERIOD[(i*bits_per_output)+(bits_per_output-1):(i*bits_per_output)]}),
+            //     .data_out(DATA_BUS_COL_OUT[i])
+            // );
 
             output_parallel_to_serial #(
                 .WIDTH_INPUT(bits_per_output)
