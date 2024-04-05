@@ -5,7 +5,7 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = tt_um_devinatkin_fastreadout.v frequency_counter.v frequency_module.v repeated_add_multiplier.v shift_register.v
+PROJECT_SOURCES = tt_um_devinatkin_fastreadout.v frequency_counter.v frequency_module.v repeated_add_multiplier.v shift_register.v output_parallel_to_serial.v
 
 ifneq ($(GATES),yes)
 
