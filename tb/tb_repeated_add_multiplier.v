@@ -14,6 +14,7 @@ module repeated_add_multiplier_tb;
     wire [WIDTH_OUT-1:0] product;
 
     integer i, j;
+    integer clock_count;
     integer file;
     //Start of multiplication time
     time startMultiplication = 0;
@@ -42,35 +43,42 @@ module repeated_add_multiplier_tb;
 
         // Reset the system
         #(10 * CLK_PERIOD); // Wait for 10 clock cycles
-
         RST_N = 1; // Release reset
 
         // Loop through all possible values of multiplicand and multiplier 0 to 255
-        // After each set value of multiplicand and multiplier, wait for multiplier+1 number of clock cycles
-            
+        // After each set value of multiplicand and multiplier, wait for the product to be correct
+        // Reset before each new set of values
 
         
         file = $fopen("sim_out/repeated_add_multiplier.txt", "w");
         $display("Multiplier Multiplicand Clock Cycles - Running...");
         for(i = 0; i < 256; i = i + 1) begin
+            multiplicand = i;
             for(j = 0; j < 256; j = j + 1) begin
-                multiplicand = i;
+                
                 multiplier = j;
+
+                RST_N = 0;
+                @(posedge CLK);
+                @(posedge CLK);
+                RST_N = 1;
+
+                clock_count = 0;
 
                 // Start the multiplication time
                 startMultiplication = $realtime;
 
                 // Wait for the product to be correct
-                while (product != multiplicand * multiplier) begin
-                    #1;
+                while (product != i * j) begin
+                    clock_count = clock_count + 1;
+                    @(posedge CLK);
                 end
 
                 // End the multiplication time
                 endMultiplication = $realtime;
 
-
                 // Write Multiplier Multiplicand Clock Cycles to file
-                $fwrite(file, "Multiplier=%d, Multiplicand=%d, Clock Cycles=%d\n", multiplier, multiplicand, (endMultiplication - startMultiplication) / CLK_PERIOD);
+                $fwrite(file, "Multiplier=%d, Multiplicand=%d, Clock Cycles=%d\n", multiplier, multiplicand, clock_count);
             end
         end
 
@@ -78,5 +86,11 @@ module repeated_add_multiplier_tb;
         $finish;
     end
 
+
+    // Dump Simulation Signals to Output File
+    // initial begin
+    //     $dumpfile("sim_out/repeated_add_multiplier.vcd");
+    //     $dumpvars(0, repeated_add_multiplier_tb);
+    // end
 
 endmodule

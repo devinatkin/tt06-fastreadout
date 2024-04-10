@@ -65,7 +65,17 @@ def main(file_path, output_png):
     
     print(f"Outputting 3D bar graph to: {output_png}")
     bar3dgraph(data, output_png)
-    # You can now use the 'data' list for further processing, analysis, or visualization.
+    
+    # Calculate mean, median, mode, and max values for Clock Cycles
+    clock_cycles = [d["Clock Cycles"] for d in data]
+    mean = np.mean(clock_cycles)
+    median = np.median(clock_cycles)
+    max_value = np.max(clock_cycles)
+
+    # Output the calculated values
+    print(f"Mean: {mean}")
+    print(f"Median: {median}")
+    print(f"Max: {max_value}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate 3D bar graph of clock cycles by multiplier and multiplicand.')
