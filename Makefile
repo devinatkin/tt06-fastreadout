@@ -40,6 +40,7 @@ tb_image_input_frequency_measure:
 tb_repeated_add_multiplier:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/repeated_add_multiplier.v tb/tb_repeated_add_multiplier.v
 	$(VVP) $(OUT_DIR)/$@.vvp
+	python3 tb/repeated_add_multiplier_graph.py $(OUT_DIR)/repeated_add_multiplier.txt $(OUT_DIR)/repeated_add_multiplier_tb.png
 
 tb_frequency_module:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_module.v src/repeated_add_multiplier.v tb/tb_frequency_module.v

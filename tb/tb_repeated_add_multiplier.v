@@ -14,7 +14,7 @@ module repeated_add_multiplier_tb;
     wire [WIDTH_OUT-1:0] product;
 
     integer i, j;
-
+    integer file;
     //Start of multiplication time
     time startMultiplication = 0;
     time endMultiplication = 0;
@@ -47,13 +47,16 @@ module repeated_add_multiplier_tb;
 
         // Loop through all possible values of multiplicand and multiplier 0 to 255
         // After each set value of multiplicand and multiplier, wait for multiplier+1 number of clock cycles
+            
+
         
+        file = $fopen("sim_out/repeated_add_multiplier.txt", "w");
+        $display("Multiplier Multiplicand Clock Cycles - Running...");
         for(i = 0; i < 256; i = i + 1) begin
             for(j = 0; j < 256; j = j + 1) begin
                 multiplicand = i;
                 multiplier = j;
-                // Display the values of multiplicand and multiplier
-                $display("Time=%t, Multiplicand=%d, Multiplier=%d", $time, multiplicand, multiplier);
+
                 // Start the multiplication time
                 startMultiplication = $realtime;
 
@@ -65,14 +68,13 @@ module repeated_add_multiplier_tb;
                 // End the multiplication time
                 endMultiplication = $realtime;
 
-                // Display the time taken for multiplication
-                $display("Time=%t, Multiplication Time=%t", $time, endMultiplication - startMultiplication);
-                // Calculate the number of clock cycles taken for multiplication
-                $display("Time=%t, Clock Cycles=%d", $time, (endMultiplication - startMultiplication) / CLK_PERIOD);
+
+                // Write Multiplier Multiplicand Clock Cycles to file
+                $fwrite(file, "Multiplier=%d, Multiplicand=%d, Clock Cycles=%d\n", multiplier, multiplicand, (endMultiplication - startMultiplication) / CLK_PERIOD);
             end
         end
-        // End simulation
-        #500;
+
+        $display("Multiplier Multiplicand Clock Cycles - Done");
         $finish;
     end
 
