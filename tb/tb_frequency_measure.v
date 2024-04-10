@@ -32,7 +32,7 @@ module frequency_measure_tb;
     wire [31:0] TIME_HIGH;
     wire [31:0] TIME_LOW;
     wire [31:0] PERIOD;
-
+    wire PULSE;
     // Instantiate the Unit Under Test (UUT)
     frequency_counter frequency_measurement (
         .CLK(CLK),
@@ -40,7 +40,8 @@ module frequency_measure_tb;
         .FREQ_IN(FREQ_OUT),
         .TIME_HIGH(TIME_HIGH),
         .TIME_LOW(TIME_LOW),
-        .PERIOD(PERIOD)
+        .PERIOD(PERIOD),
+        .PULSE(PULSE)
     );
 
     // Clock generation
@@ -58,18 +59,12 @@ module frequency_measure_tb;
         // Light Level Variation Test
         for(i = 0; i < 256; i = i + 1) begin
             light_level = i;
-            #4000; // Wait time between light level changes
+            #1;
+            @(posedge PULSE);
+            @(posedge PULSE);
+            @(posedge PULSE);
+            @(posedge PULSE);
 
-
-
-            while (freq_change_count < 12) begin
-                #10;
-                if (FREQ_OUT != prev_freq_out) begin
-                    freq_change_count = freq_change_count + 1;
-                    prev_freq_out = FREQ_OUT;
-                end
-            end
-            freq_change_count = 0;
         end
 
         $finish; // End simulation
@@ -80,7 +75,7 @@ module frequency_measure_tb;
     initial begin
         file = $fopen("sim_out/frequency_measure_tb.txt", "w");
     end
-    always @(TIME_HIGH or TIME_LOW or PERIOD or light_level) begin
+    always @(posedge PULSE) begin
             $fwrite(file, "At time %t, TIME_HIGH = %d, TIME_LOW = %d, PERIOD = %d, light_level = %d\n", $time, TIME_HIGH, TIME_LOW, PERIOD, light_level);
 
     end

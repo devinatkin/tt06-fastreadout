@@ -19,7 +19,7 @@ module tt_um_devinatkin_fastreadout
     parameter LOW_FREQ = 2000;
     parameter HIGH_FREQ = 2_500_000;
 
-    parameter counter_bits = 15;
+    parameter counter_bits = $clog2($rtoi(CLOCK_FREQ/(LOW_FREQ)));
     parameter counter_variable_size = counter_bits * pixels;
     parameter number_of_outputs_for_rc = 16;
 
@@ -40,10 +40,11 @@ module tt_um_devinatkin_fastreadout
 
     // wire [7:0] DATA_BUS_COL_OUT;
     wire [7:0] DATA_BUS_ROW_OUT;
+    wire [7:0] DATA_BUS_PULSE_OUT;
     // Configure uio_oe to set the uio_s (active low)
     assign uio_oe = 8'b11111111;
     // assign uo_out = DATA_BUS_COL_OUT;
-    assign uio_out = DATA_BUS_ROW_OUT[7:0];
+    assign uio_out = DATA_BUS_PULSE_OUT;
     assign uo_out = DATA_BUS_ROW_OUT[7:0];
 
     // Row Data Flow Path
@@ -92,7 +93,8 @@ module tt_um_devinatkin_fastreadout
                 .FREQ_IN(PIXEL_ROW_DATA[i]),
                 .TIME_HIGH(ROW_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
                 .TIME_LOW(ROW_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
-                .PERIOD(ROW_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
+                .PERIOD(ROW_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                .PULSE(DATA_BUS_PULSE_OUT[i])
             );
 
             output_parallel_to_serial #(

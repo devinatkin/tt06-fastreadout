@@ -15,7 +15,7 @@ module tb_frequency_counter();
     wire [31:0] TIME_HIGH;
     wire [31:0] TIME_LOW;
     wire [31:0] PERIOD;
-
+    wire PULSE;
     integer i;
     integer j;
     integer previous_j;
@@ -28,7 +28,8 @@ module tb_frequency_counter();
         .FREQ_IN(FREQ_IN),
         .TIME_HIGH(TIME_HIGH),
         .TIME_LOW(TIME_LOW),
-        .PERIOD(PERIOD)
+        .PERIOD(PERIOD),
+        .PULSE(PULSE)
     );
 
     // Clock generation

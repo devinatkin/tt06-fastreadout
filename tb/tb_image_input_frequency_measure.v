@@ -30,6 +30,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     wire [(IMAGE_SIZE*counter_bits)-1:0] TIME_HIGH;
     wire [(IMAGE_SIZE*counter_bits)-1:0] TIME_LOW;
     wire [(IMAGE_SIZE*counter_bits)-1:0] TIME_PERIOD;
+    wire [(IMAGE_SIZE)-1:0] OUT_PULSE;
 
     reg [(IMAGE_SIZE*counter_bits)-1:0] temp_out;
 
@@ -75,7 +76,8 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
                     .FREQ_IN(freq_out_values[i]),
                     .TIME_HIGH(TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
                     .TIME_LOW(TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
-                    .PERIOD(TIME_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)])
+                    .PERIOD(TIME_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                    .PULSE(OUT_PULSE[i])
                 );
         end
 
