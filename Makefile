@@ -44,6 +44,7 @@ tb_repeated_add_multiplier:
 tb_frequency_module:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_module.v src/repeated_add_multiplier.v tb/tb_frequency_module.v
 	$(VVP) $(OUT_DIR)/$@.vvp
+	python3 tb/frequency_module_graph.py $(OUT_DIR)/frequency_module_tb.txt $(OUT_DIR)/period_vs_light.png $(OUT_DIR)/frequency_vs_light.png
 
 tb_frequency_counter:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_counter.v tb/tb_frequency_counter.v
@@ -52,6 +53,7 @@ tb_frequency_counter:
 tb_frequency_measure:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/frequency_counter.v src/frequency_module.v src/repeated_add_multiplier.v tb/tb_frequency_measure.v
 	$(VVP) $(OUT_DIR)/$@.vvp
+	python3 tb/frequency_measure_graph.py $(OUT_DIR)/frequency_measure_tb.txt $(OUT_DIR)/frequency_measure_tb.png
 
 tb_output_parallel_to_serial:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/output_parallel_to_serial.v tb/tb_output_parallel_to_serial.v

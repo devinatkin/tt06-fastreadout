@@ -50,20 +50,23 @@ def plot_period_vs_light(levels, periods, filename):
     plt.close()
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <path_to_text_file>")
+    if len(sys.argv) != 4:
+        print("Usage: python script.py <path_to_text_file> <path_to_period_vs_light_graph> <path_to_frequency_vs_light_graph>")
         sys.exit(1)
     
     file_path = sys.argv[1]
+    period_v_light_file_path = sys.argv[2]
+    frequency_v_light_file_path = sys.argv[3]
+
     data = process_file(file_path)
 
     light_levels = list(data.keys())
     mode_frequencies_hz = [mode[0] for mode in data.values()]
     periods_seconds = [1 / freq if freq != 0 else 0 for freq in mode_frequencies_hz]
 
-    plot_frequency_vs_light(light_levels, mode_frequencies_hz, 'frequency_vs_light.jpg')
-    plot_period_vs_light(light_levels, periods_seconds, 'period_vs_light.jpg')
-    print("Graphs have been saved as 'frequency_vs_light.jpg' and 'period_vs_light.jpg'.")
+    plot_frequency_vs_light(light_levels, mode_frequencies_hz, frequency_v_light_file_path)
+    plot_period_vs_light(light_levels, periods_seconds, period_v_light_file_path)
+    print(f"Graphs have been saved as '{frequency_v_light_file_path}' and '{period_v_light_file_path}'.")
 
 if __name__ == "__main__":
     main()

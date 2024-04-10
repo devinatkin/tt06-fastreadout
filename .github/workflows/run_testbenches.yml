@@ -11,15 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        target: [
-          "tb_shift_register",
-          "tb_image_input",
-          "tb_repeated_add_multiplier",
-          "tb_frequency_module",
-          "tb_frequency_counter",
-          "tb_frequency_measure"
-        ]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -36,9 +27,27 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: Run individual testbenches
+    - name: Run testbenches
       run: |
-        make ${{ matrix.target }}
+        make tb_shift_register &
+        make tb_image_input &
+        make tb_repeated_add_multiplier &
+        make tb_frequency_module &
+        make tb_frequency_counter &
+        make tb_frequency_measure &
+        wait
+
+    - name: Upload testbench result graphs
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image Files
+        path: sim_out/*.png
+
+    - name: Upload testbench result txt files
+      uses: actions/upload-artifact@v4
+      with:
+        name: Results Files
+        path: sim_out/*.txt
 
     - name: Cleanup
       run: |
