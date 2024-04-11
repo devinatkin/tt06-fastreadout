@@ -67,13 +67,13 @@ module tb_frequency_counter();
                 $display("TIME_LOW: %d, TIME_HIGH: %d, PERIOD: %d", TIME_LOW, TIME_HIGH, PERIOD);
                 // Check the output values
                 if (TIME_LOW != i) begin
-                    $display("TIME_LOW: Expected %d, Got %d", i, TIME_LOW);
+                    $error("TIME_LOW: Expected %d, Got %d", i, TIME_LOW);
                     $finish;
                 end
 
                 // TIME_HIGH will be for the previous cycle becuase it is updated on CLK posedge
                 if (TIME_HIGH != (previous_j)) begin 
-                    $display("TIME_HIGH: Expected %d, Got %d", j, TIME_HIGH);
+                    $error("TIME_HIGH: Expected %d, Got %d", j, TIME_HIGH);
                     $finish;
                 end
                 previous_j = j;

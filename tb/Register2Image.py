@@ -88,5 +88,10 @@ if __name__ == "__main__":
         if result:
             print("Images match")
             print("Rotation: {}".format(rotation))
+            img.save("sim_out/matched_image.png")
         else:
             print("Images do not match")
+            # Save the mismatched image
+            img.save("sim_out/mismatched_image.png")
+
+            raise ValueError("Images do not match")

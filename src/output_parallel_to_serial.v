@@ -4,31 +4,24 @@ module output_parallel_to_serial #(
     input wire CLK,
     input wire RST_N,
     input wire [(WIDTH_INPUT-1):0] data_in,
-    output wire data_out
+    output reg data_out
 );
 
-    // Output Module
-    // - Takes an input parallel data stream
-    // - Outputs a serial data stream
-
-    // - Load the data in into a register
-    // - Shift the data through the register
-    // - Output the data on the last bit of the register+
-
-    reg [(WIDTH_INPUT-1):0] output_reg;
+    // A Demux is used to select the correct output
+    // From the data_in and pass it to the data_out
+    reg[$clog2(WIDTH_INPUT):0] bit_select;
 
     always @(posedge CLK) begin
         if (~RST_N) begin
-            output_reg <= 0;
-
+            bit_select <= 0;
+            data_out <= 0;
         end else begin
-            if(output_reg == 0) begin
-                output_reg <= data_in;
+            if(bit_select == WIDTH_INPUT-1) begin
+                bit_select <= 0;
             end else begin
-                output_reg <= output_reg >> 1;
+                bit_select <= bit_select + 1;
             end
+            data_out <= data_in[bit_select];
         end
     end
-
-    assign data_out = output_reg[0];
 endmodule
