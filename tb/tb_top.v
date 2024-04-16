@@ -10,10 +10,20 @@ module tb_top;
     reg clk;
     reg rst_n;
 
+    // Row Shift Register Inputs
+    wire DATA_IN1;
+    wire RCLK_1;
+    wire LOAD_1;
+
+    assign DATA_IN1 = ui_in[0];
+    assign RCLK_1 = ui_in[1];
+    assign LOAD_1 = ui_in[2];
+
     // Outputs
     wire [7:0] uo_out;
     wire [7:0] uio_out;
     wire [7:0] uio_oe;
+
 
     integer valid_test_count = 0;
 
@@ -33,20 +43,80 @@ module tb_top;
     always #10 clk = ~clk;
 
     integer file;
+
+    integer k;
+    parameter bits_per_pixel = 5;
+    parameter pixels = 8;
+    reg [(bits_per_pixel*pixels):0] input_level = 0;
+
+    // Reset Input Registers
+    initial begin
+        ui_in[1] = 1'b0;
+        #10;
+        ui_in[1] = 1'b1;
+        #10;
+    end
+
     // Stimulus
     initial begin
+        if (uut.bits_per_pixel != bits_per_pixel) begin
+            $display("Error: uut.bits_per_pixel is not equal to bits_per_pixel, %0d != %0d", uut.bits_per_pixel, bits_per_pixel);
+            $finish;
+        end
+        if (uut.pixels != pixels) begin
+            $display("Error: uut.pixels is not equal to pixels, %0d != %0d", uut.pixels, pixels);
+            $finish;
+        end
         // Initialize Inputs
         file = $fopen("sim_out/tb_top_output.txt", "w");
         clk = 1'b0;
         rst_n = 1'b0;
         ena = 1'b1;
+        k = 0;
         running_sim = 1'b0;
+        #20;
+
         #20;
         rst_n = 1'b1;
         ena = 1'b1;
         #20;
         running_sim = 1'b1;
-        #50000;
+
+        // Test 1 (Test the output with 0 input values)
+        $display("Test 1 (Test the output with 0 input values)");
+        $fwrite(file, "Test 1 (Test the output with 0 input values)\n");
+        #1000000;
+        $fwrite(file, "Test 1 (Test the output with 0 input values) - Passed\n");
+
+        // Test 2 (Test the output with incrementing input values)
+        $display("Test 2 (Test the output with incrementing input values)");
+        $fwrite(file, "Test 2 (Test the output with incrementing input values)\n");
+
+        for (input_level = 0; input_level < 2**(bits_per_pixel*pixels); input_level = input_level + 1) begin
+            $display("Testing - Input Level = %0d", input_level);
+            $fwrite(file, "Testing - Input Level = %0d\n", input_level);
+            // Shift in the current light level
+            for (k = 0; k< (bits_per_pixel*pixels); k = k + 1) begin
+                // Toggle DATA_IN
+                ui_in[0] = input_level[k];
+                // Toggle RCLK high
+                ui_in[1] = 1'b0;
+                #20;
+                ui_in[1] = 1'b1;
+                #20;
+            end
+            // Toggle LOAD high
+            ui_in[2] = 1'b1;
+            ui_in[1] = 1'b0;
+            #20;
+            ui_in[1] = 1'b1;
+            #20;
+            ui_in[1] = 1'b0;
+            ui_in[2] = 1'b0;
+
+            $display("Currently Loaded Input = %b",uut.ROW_DATA);
+            #50000;
+        end
         
         //TODO Implement top level tests
         $display("All tests passed (tb_top.v)");
@@ -119,6 +189,8 @@ module tb_top;
                                 $finish; // Terminate simulation
                             end
                             valid_test_count = valid_test_count + 1;
+
+                            $fwrite(file, "Output %0d = %0d\n", j, uo_out_values[j]);
                         end
 
 

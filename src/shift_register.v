@@ -11,6 +11,7 @@ module shift_register #(parameter WIDTH = 512) (
     always @(posedge clk) begin
         if (!reset_n) begin
             shift_reg <= 'd0;
+            data_out <= 'd0;
         end else begin
             if (load) begin
                 data_out <= shift_reg;

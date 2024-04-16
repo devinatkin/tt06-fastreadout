@@ -35,6 +35,7 @@ jobs:
         make tb_frequency_module &
         make tb_frequency_counter &
         make tb_frequency_measure &
+        make tb_top &
         wait
 
     - name: Upload testbench result graphs
