@@ -34,8 +34,8 @@ module tt_um_devinatkin_fastreadout
     wire [pixels-1:0] PIXEL_ROW_DATA;
 
 
-    wire [counter_variable_size-1:0] ROW_TIME_HIGH;
-    wire [counter_variable_size-1:0] ROW_TIME_LOW;
+    // wire [counter_variable_size-1:0] ROW_TIME_HIGH;
+    // wire [counter_variable_size-1:0] ROW_TIME_LOW;
     wire [counter_variable_size-1:0] ROW_PERIOD;
 
     // wire [7:0] DATA_BUS_COL_OUT;
@@ -91,8 +91,8 @@ module tt_um_devinatkin_fastreadout
                 .CLK(clk),
                 .RST_N(rst_n),
                 .FREQ_IN(PIXEL_ROW_DATA[i]),
-                .TIME_HIGH(ROW_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
-                .TIME_LOW(ROW_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                // .TIME_HIGH(ROW_TIME_HIGH[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
+                // .TIME_LOW(ROW_TIME_LOW[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
                 .PERIOD(ROW_PERIOD[(i*counter_bits)+(counter_bits-1):(i*counter_bits)]),
                 .PULSE(DATA_BUS_PULSE_OUT[i])
             );
