@@ -21,6 +21,7 @@ all: tb_top tb_shift_register tb_image_input tb_repeated_add_multiplier tb_frequ
 tb_top: 
 	$(IVL) -o $(OUT_DIR)/$@.vvp $(SOURCES) tb/tb_top.v 
 	$(VVP) $(OUT_DIR)/$@.vvp
+	python3 tb/graph_top_outputs.py sim_out/tb_top_output.txt sim_out
 
 tb_shift_register: 
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/shift_register.v tb/tb_shift_register.v

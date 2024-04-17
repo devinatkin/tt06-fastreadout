@@ -84,17 +84,17 @@ module tb_top;
 
         // Test 1 (Test the output with 0 input values)
         $display("Test 1 (Test the output with 0 input values)");
-        $fwrite(file, "Test 1 (Test the output with 0 input values)\n");
+        $fwrite(file, "%0t - Test 1 (Test the output with 0 input values)\n",$time);
         #1000000;
-        $fwrite(file, "Test 1 (Test the output with 0 input values) - Passed\n");
+        $fwrite(file, "%0t - Test 1 (Test the output with 0 input values) - Passed\n",$time);
 
         // Test 2 (Test the output with incrementing input values)
         $display("Test 2 (Test the output with incrementing input values)");
-        $fwrite(file, "Test 2 (Test the output with incrementing input values)\n");
+        $fwrite(file, "%0t - Test 2 (Test the output with incrementing input values)\n", $time);
 
         for (input_level = 0; input_level < 2**(bits_per_pixel*pixels); input_level = input_level + 1) begin
             $display("Testing - Input Level = %0d", input_level);
-            $fwrite(file, "Testing - Input Level = %0d\n", input_level);
+            $fwrite(file, "%0t - Testing - Input Level = %0d\n", $time, input_level);
             // Shift in the current light level
             for (k = 0; k< (bits_per_pixel*pixels); k = k + 1) begin
                 // Toggle DATA_IN
@@ -114,10 +114,11 @@ module tb_top;
             ui_in[1] = 1'b0;
             ui_in[2] = 1'b0;
 
-            $display("Currently Loaded Input = %b",uut.ROW_DATA);
-            #50000;
+            #5000;
         end
-        
+        $display("Test 2 (Test the output with incrementing input values) - Passed");
+        $fwrite(file, "%0t - Test 2 (Test the output with incrementing input values) - Passed\n", $time);
+
         //TODO Implement top level tests
         $display("All tests passed (tb_top.v)");
         $display("Valid Test Count (Output Register Matches)= %0d", valid_test_count);
@@ -147,7 +148,7 @@ module tb_top;
     always @(posedge clk) begin
         for (i = 0; i < 8; i = i + 1) begin
             if (uio_out[i] && !prev_uio_out[i]) begin // Check for positive edge
-                $fwrite(file, "Period Pulse Out %0d  = %0t\n", i, ($time - last_pulse_out[i]));
+                $fwrite(file, "%0t - Period Pulse Out %0d  = %0t\n",$time, i, ($time - last_pulse_out[i]));
                 last_pulse_out[i] = $time;
                 valid_output_values[i] = 0;
             end
@@ -190,7 +191,7 @@ module tb_top;
                             end
                             valid_test_count = valid_test_count + 1;
 
-                            $fwrite(file, "Output %0d = %0d\n", j, uo_out_values[j]);
+                            $fwrite(file, "%0t - Output %0d = %0d\n", $time, j, uo_out_values[j]);
                         end
 
 

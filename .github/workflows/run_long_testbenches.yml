@@ -25,6 +25,18 @@ jobs:
       run: |
         make ${{ matrix.target }}
 
+    - name: Upload testbench result graphs
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image Files for ${{ matrix.target }}
+        path: sim_out/*.png
+
+    - name: Upload testbench result txt files
+      uses: actions/upload-artifact@v4
+      with:
+        name: Results Files for ${{ matrix.target }}
+        path: sim_out/*.txt
+
     - name: Cleanup
       run: |
         make clean
