@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`timescale 1ns / 1ns
 
 module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FILE= "tb/output.txt", OUTPUT_FILE = "tb/verilog_output.txt") ;
 
@@ -8,7 +8,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     parameter counter_bits = 15;
     localparam WIDTH = IMAGE_SIZE * INPUT_BITS;
     parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
-    parameter LOW_FREQ = 1_000.3;
+    parameter LOW_FREQ = 200_000.3;
     parameter HIGH_FREQ = 20_000_000;
     
     // Clock period definitions
@@ -31,12 +31,14 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
     wire [(IMAGE_SIZE*counter_bits)-1:0] TIME_LOW;
     wire [(IMAGE_SIZE*counter_bits)-1:0] TIME_PERIOD;
     wire [(IMAGE_SIZE)-1:0] OUT_PULSE;
-
+    reg [(IMAGE_SIZE)-1:0] OUT_PULSE_MONITOR;
     reg [(IMAGE_SIZE*counter_bits)-1:0] temp_out;
 
     // File
     integer file;
     integer output_file;
+
+    time start_time;
 
     // Instantiate the Shift Registers module (Data Out will be Fed into the Frequency Modules)
     shift_register #(.WIDTH(WIDTH)) data_shift_in (
@@ -93,6 +95,9 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
         load = 0;
         data_in = 0;
 
+        // Initialize out_pulse_monitor to 0
+        OUT_PULSE_MONITOR = 0;
+
         // Wait for 40 ns for global reset to finish
         #40;
         reset_n = 1;
@@ -118,7 +123,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
         // For each line
         for (int i = 0; i < IMAGE_SIZE; i = i + 1) begin
             // Read in the next line
-            $display("Reading line %d", i);
+            $display("Reading line %0d", i);
             for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
                 if (!$fscanf(file, "%h ", temp)) begin
                     $display("Error reading file");
@@ -140,11 +145,18 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
             #PERIOD;
             load = 0;
             
-            $display("Simulating line %d", i);
+            $display("Simulating line %0d", i);
             // Wait for all the freq_out to complete (with a lowest frequency being 1khz, wait at least 1ms)
-            #(1_000_000);
-
-            $display("Finished simulating line %d", i);
+            OUT_PULSE_MONITOR = 0;
+            start_time = $realtime;
+            // Wait until all bits of the out pulse monitor are 1
+            while (OUT_PULSE_MONITOR != (2**IMAGE_SIZE - 1)) begin
+                #PERIOD;
+                
+            end
+            //After the Line has had sufficient time to be processed, reset the out_pulse_monitor
+            OUT_PULSE_MONITOR = 0;
+            $display("Finished simulating line %0d - Line Took %0t ns", i, $realtime - start_time);
             // Write the line to the output file
 
 
@@ -159,26 +171,37 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
 
             // Output the TIME_PERIOD values to the output file
             temp_out = TIME_PERIOD;
-            $display("Writing Line # %d", i);
+            $display("Writing Line # %0d", i);
 
 
-            $fwrite(output_file, "Line # %d: ", i);
+            $fwrite(output_file, "Line # %0d: ", i);
             for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
                 $fwrite(output_file, "%h ", temp_out[(counter_bits-1):0]);
                 temp_out = temp_out >> counter_bits;
             end
             $fwrite(output_file, "\n");
-            $display("Finished # %d \n", i);
+            $display("Finished # %0d \n", i);
         end
 
 
         // End of test
-        $display("Image Output Testbench finished successfully");
+        $display("Image Output Testbench finished successfully at %t", $time);
         $finish;
     end
 
     // Clock generation
     always #10 clk = ~clk;
+
+    // Monitor for Output Pulses and store them in OUT_PULSE_MONITOR
+    // When a pulse is detected, set the corresponding bit in OUT_PULSE_MONITOR to 1
+    // The monitor remains high until the monitor is reset as part of the simulation for a line
+    always @(posedge clk) begin
+        for (int i = 0; i < IMAGE_SIZE; i = i + 1) begin
+            if (OUT_PULSE[i]) begin // Check for positive edge
+                OUT_PULSE_MONITOR[i] = 1;
+            end
+        end
+    end
 
     // Dump variables to VCD file
     // initial begin
