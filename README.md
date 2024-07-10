@@ -10,11 +10,9 @@ This project is a image sensor "Simulation" intended to validate a readout schem
 - Pixel Array (frequency_module.v), instead of simulating an array of pixels with both rows and columns I have chosen to simulate a single short column of pixel. This is because the design is intended to be a validation of the readout chain and not the pixel design. This is also due to the limited space available on the chip.
 - Frequency Counter (frequency_counter.v), this is a simple counter that counts the number of clock cycles between the rising edges of the input clock. This is used to measure the frequency of the output of the pixel array.
 
-# Tiny Tapeout Verilog Project Template
 
-- [Read the documentation for project](docs/info.md)
+## TODO
 
-## What is Tiny Tapeout?
-
-TinyTapeout is an educational project that aims to make it easier and cheaper than ever to get your digital designs manufactured on a real chip.
-To learn more and get started, visit https://tinytapeout.com.
+- Run long running test with sufficient storage to pass. 
+- Improve long running simulations to better demonstrate the full "chip" simulations
+- Create Custom GDS design based design for this concept (Any potential applications?)
