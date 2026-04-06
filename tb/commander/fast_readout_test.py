@@ -125,7 +125,7 @@ for bit in range(40):
 for value in range(0,32):
     print(f"Testing value: {value:05b}")
     for signal_index in range(8):
-        shift_40bit_value(tt, dut, value << (signal_index * 5))
+        shift_40bit_value(tt, dut, value << ((7 - signal_index) * 5))
         timings = measure_high_low_cycles(tt, dut, cycles=1, signal_index=signal_index)
         print(f"Shifted value {value:05b} for signal {signal_index} - Timing Analysis:")
         print_timing_analysis(timings)
