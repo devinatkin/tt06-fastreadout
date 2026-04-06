@@ -1,0 +1,42 @@
+name: Run Long Running Testbenches
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: self-hosted
+    timeout-minutes: 7200
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [
+            "tb_image_input_frequency_measure",
+            "tb_top"
+        ]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run individual long running testbenches
+      run: |
+        make ${{ matrix.target }}
+
+    - name: Upload testbench result graphs
+      uses: actions/upload-artifact@v4
+      with:
+        name: Image Files for ${{ matrix.target }}
+        path: sim_out/*.png
+
+    - name: Upload testbench result txt files
+      uses: actions/upload-artifact@v4
+      with:
+        name: Results Files for ${{ matrix.target }}
+        path: sim_out/*.txt
+
+    - name: Cleanup
+      run: |
+        make clean
