@@ -7,77 +7,75 @@ from collections import defaultdict
 FILENAME = "counting_tests.txt"
 PLOT_DIR = "plots"
 
-# === SETUP OUTPUT DIRECTORY ===
 os.makedirs(PLOT_DIR, exist_ok=True)
 
-# === DATA STRUCTURE ===
-data = defaultdict(list)
+# totals[signal][input_value] = list of TOTALs
+totals = defaultdict(lambda: defaultdict(list))
 
-current_test_value = None
 current_signal = None
+current_input_value = None
 
 # === REGEX PATTERNS ===
-test_value_pattern = re.compile(r"Testing value:\s*(\d+)")
-signal_pattern = re.compile(r"Shifted value\s+\d+\s+for signal\s+(\d+)")
-duty_pattern = re.compile(r"DUTY=([0-9.]+)")
+shifted_pattern = re.compile(r"Shifted value\s+([01]+)\s+for signal\s+(\d+)")
+total_pattern = re.compile(r"TOTAL=([0-9.]+)")
 
 # === PARSE FILE ===
 with open(FILENAME, "r") as f:
     for line in f:
         line = line.strip()
 
-        match = test_value_pattern.search(line)
+        match = shifted_pattern.search(line)
         if match:
-            current_test_value = int(match.group(1))
+            binary_str = match.group(1)
+            current_input_value = int(binary_str, 2)   # binary -> integer
+            current_signal = int(match.group(2))
             continue
 
-        match = signal_pattern.search(line)
-        if match:
-            current_signal = int(match.group(1))
-            continue
+        match = total_pattern.search(line)
+        if match and current_signal is not None and current_input_value is not None:
+            total_val = float(match.group(1))
+            totals[current_signal][current_input_value].append(total_val)
 
-        match = duty_pattern.search(line)
-        if match and current_test_value is not None and current_signal is not None:
-            duty = float(match.group(1))
-            data[current_signal].append((current_test_value, duty))
+# === AVERAGE TOTALS IF DUPLICATES EXIST ===
+avg_totals = {}
 
-# === SORT DATA ===
-for signal in data:
-    data[signal].sort(key=lambda x: x[0])
+for signal, values_dict in totals.items():
+    avg_totals[signal] = {}
+    for input_value, total_list in values_dict.items():
+        avg_totals[signal][input_value] = sum(total_list) / len(total_list)
 
-# === 1. COMBINED PLOT ===
-plt.figure()
+# === COMBINED PLOT ===
+plt.figure(figsize=(12, 7))
 
-for signal, values in sorted(data.items()):
-    x = [v[0] for v in values]
-    y = [v[1] for v in values]
-    plt.plot(x, y, label=f"Signal {signal}")
+for signal in sorted(avg_totals.keys()):
+    x = sorted(avg_totals[signal].keys())
+    y = [avg_totals[signal][v] for v in x]
+    plt.plot(x, y, marker='o', label=f"S{signal}")
 
-plt.xlabel("Test Value")
-plt.ylabel("Duty Cycle")
-plt.title("Duty Cycle vs Test Value (All Signals)")
+plt.xlabel("Input value")
+plt.ylabel("TOTAL")
+plt.title("TOTAL vs input value")
 plt.legend()
 plt.grid(True)
 
-combined_path = os.path.join(PLOT_DIR, "all_signals.png")
+combined_path = os.path.join(PLOT_DIR, "all_signals_total.png")
 plt.tight_layout()
 plt.savefig(combined_path)
 plt.close()
 
-# === 2. INDIVIDUAL SIGNAL PLOTS ===
-for signal, values in sorted(data.items()):
-    x = [v[0] for v in values]
-    y = [v[1] for v in values]
+# === INDIVIDUAL SIGNAL PLOTS ===
+for signal in sorted(avg_totals.keys()):
+    x = sorted(avg_totals[signal].keys())
+    y = [avg_totals[signal][v] for v in x]
 
-    plt.figure()
-    plt.plot(x, y)
-
-    plt.xlabel("Test Value")
-    plt.ylabel("Duty Cycle")
-    plt.title(f"Signal {signal} Duty Cycle")
+    plt.figure(figsize=(8, 5))
+    plt.plot(x, y, marker='o')
+    plt.xlabel("Input value")
+    plt.ylabel("TOTAL")
+    plt.title(f"S{signal}: TOTAL vs input value")
     plt.grid(True)
 
-    filename = os.path.join(PLOT_DIR, f"signal_{signal}.png")
+    filename = os.path.join(PLOT_DIR, f"signal_{signal}_total.png")
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
