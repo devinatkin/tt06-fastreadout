@@ -30,7 +30,7 @@ jobs:
     - name: Run testbenches
       run: |
         make tb_shift_register &
-        make tb_image_input &
+        make tb_shift_register_image_input &
         make tb_repeated_add_multiplier &
         make tb_frequency_module &
         make tb_frequency_counter &

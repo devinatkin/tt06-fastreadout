@@ -27,9 +27,9 @@ tb_shift_register:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/shift_register.v tb/tb_shift_register.v
 	$(VVP) $(OUT_DIR)/$@.vvp
 
-tb_image_input:
+tb_shift_register_image_input:
 	python3 tb/Image2Register.py --image_path tb/Image_Test_Input.png --output_path $(OUT_DIR)/Image_Test_Input.txt
-	$(IVL) -Ptb_image_input.IMAGE_FILE=\"$(OUT_DIR)/Image_Test_Input.txt\" -Ptb_image_input.OUTPUT_FILE=\"$(OUT_DIR)/verilog_out.txt\" -o $(OUT_DIR)/$@.vvp src/shift_register.v tb/tb_image_input.v
+	$(IVL) -Ptb_shift_register_image_input.IMAGE_FILE=\"$(OUT_DIR)/Image_Test_Input.txt\" -Ptb_shift_register_image_input.OUTPUT_FILE=\"$(OUT_DIR)/verilog_out.txt\" -o $(OUT_DIR)/$@.vvp src/shift_register.v tb/tb_shift_register_image_input.v
 	$(VVP) $(OUT_DIR)/$@.vvp
 	python3 tb/Register2Image.py -input_file $(OUT_DIR)/verilog_out.txt -compare_file tb/Image_Test_Input.png
 
