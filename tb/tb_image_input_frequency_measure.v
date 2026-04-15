@@ -1,6 +1,6 @@
 `timescale 1ns / 1ns
 
-module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FILE= "tb/output.txt", OUTPUT_FILE = "tb/verilog_output.txt") ;
+module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FILE= "tb/output.txt", OUTPUT_FILE = "tb/verilog_output.txt", REGISTER_OUTPUT_FILE = "tb/register_output.txt");
 
     // Parameters
     // Width of the shift register is 8-bits per pixel
@@ -133,6 +133,7 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
                 
             end
 
+            $display("Loading line %0d into shift register", i);
             // Shift in the line
             for (int j = IMAGE_SIZE*8 - 1; j >= 0; j = j - 1) begin
                 // Shift in 1 into the ith position
@@ -145,6 +146,24 @@ module tb_image_input_frequency_measure #(parameter IMAGE_SIZE = 1024, IMAGE_FIL
             #PERIOD;
             load = 0;
             
+            // Check that the data_out is correct i.e. it maches the data_in
+            // This check is immediately after the load signal to ensure that the shift register has loaded the data correctly
+            if (data_out != data_in) begin
+                $display("Error: data_out does not match data_in after load");
+                $display("data_in: %b", data_in);
+                $display("data_out: %b", data_out);
+                $fatal;
+            end
+
+            // Write the line to the register output file after loading for later validation
+            $fwrite(register_output_file, "Line # %0d: ", i);
+            for (int j = 0; j < IMAGE_SIZE; j = j + 1) begin
+                $fwrite(register_output_file, "%h ", data_out[(INPUT_BITS*j) + (INPUT_BITS-1) : (INPUT_BITS*j)]);
+
+            end
+            $fwrite(register_output_file, "\n");
+
+
             $display("Simulating line %0d", i);
             // Wait for all the freq_out to complete (with a lowest frequency being 1khz, wait at least 1ms)
             OUT_PULSE_MONITOR = 0;
