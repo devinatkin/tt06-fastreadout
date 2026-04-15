@@ -54,7 +54,7 @@ module tb_frequency_counter();
         @(posedge RST_N);
 
         $display("Starting test");
-        // Test from time low/high 0 to 2^^31 - 1 clock cycles
+        // Test from time low/high 0 to 300 clock cycles
         for (i = 1; i < 300; i = i + 1) begin
             for (j = 1; j < 300; j = j + 1) begin
                 FREQ_IN = 0;
