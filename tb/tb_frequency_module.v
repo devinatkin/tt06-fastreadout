@@ -2,10 +2,10 @@
 
 module frequency_module_tb;
 
-    parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
-    parameter LOW_FREQ = 1_000.333;
-    parameter HIGH_FREQ = 20_000_000;
-    parameter INPUT_BITS = 8;
+    parameter CLOCK_FREQ = 6_250_000; // Clock frequency in Hz
+    parameter LOW_FREQ = 2_000;
+    parameter HIGH_FREQ = 2_500_000;
+    parameter INPUT_BITS = 5;
 
     reg CLK;
     reg RST_N;
@@ -67,6 +67,10 @@ module frequency_module_tb;
 
     initial begin
         file = $fopen("sim_out/frequency_module_tb.txt", "w");
+    end
+    // Write the clock_freq to the output file for graphing purposes
+    initial begin
+        $fwrite(file, "Clock Frequency: %d Hz\n", CLOCK_FREQ);
     end
     always @(posedge FREQ_OUT) begin
         if (last_posedge_time != 0) begin
