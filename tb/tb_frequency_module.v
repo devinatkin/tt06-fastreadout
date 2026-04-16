@@ -30,7 +30,7 @@ module frequency_module_tb;
 
     // Clock generation
     initial CLK = 0;
-    always #10 CLK = ~CLK; // 50MHz Clock, period = 20ns
+    always #(1e9 / (2 * CLOCK_FREQ)) CLK = ~CLK; // Clock at CLOCK_FREQ
 
     // Test scenarios
     initial begin

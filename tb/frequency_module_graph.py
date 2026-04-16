@@ -15,6 +15,7 @@ def process_file(file_path):
             first_line = lines[0]
             if "Clock Frequency" in first_line:
                 freq_clock_hz = float(first_line.split(':')[-1].split()[0])
+                print(f"Parsed clock frequency: {freq_clock_hz} Hz")
 
         # --- Parse rest of data ---
         for line in lines[1:]:  # skip first line
