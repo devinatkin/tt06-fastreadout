@@ -2,10 +2,10 @@
 
 module frequency_module_tb;
 
-    parameter CLOCK_FREQ = 6_250_000; // Clock frequency in Hz
-    parameter LOW_FREQ = 2_000;
-    parameter HIGH_FREQ = 2_500_000;
-    parameter INPUT_BITS = 5;
+    parameter CLOCK_FREQ = 50_000_000; // Clock frequency in Hz
+    parameter LOW_FREQ = 20_000;
+    parameter HIGH_FREQ = 20_000_000;
+    parameter INPUT_BITS = 8;
 
     reg CLK;
     reg RST_N;

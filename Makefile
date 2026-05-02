@@ -42,6 +42,7 @@ tb_image_input_frequency_module:
 	python3 tb/Image2Register.py --image_path tb/Image_Test_Input.png --output_path $(OUT_DIR)/Image_Test_Input.txt
 	$(IVL) -Ptb_image_input_frequency_module.IMAGE_FILE=\"$(OUT_DIR)/Image_Test_Input.txt\" -Ptb_image_input_frequency_module.OUTPUT_FILE=\"$(OUT_DIR)/verilog_out_frequency_module.txt\" -o $(OUT_DIR)/$@.vvp src/shift_register.v src/frequency_module.v src/repeated_add_multiplier.v src/frequency_counter.v tb/tb_image_input_frequency_module.v
 	$(VVP) $(OUT_DIR)/$@.vvp
+	python3 tb/FrequencyModule_ImageOutput_Interpretaion.py $(OUT_DIR)/verilog_out_frequency_module.txt $(OUT_DIR)/frequency_module_output.png
 
 tb_repeated_add_multiplier:
 	$(IVL) -o $(OUT_DIR)/$@.vvp src/repeated_add_multiplier.v tb/tb_repeated_add_multiplier.v

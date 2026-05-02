@@ -71,52 +71,13 @@ module tb_image_input_frequency_module;
         forever #(PERIOD/2) clk = ~clk;
     end
 
-    // ----------------------------------------------------------------
-    // Rising-edge tracker on FREQ_OUT
-    // Measure period using first and second rising edges
-    // ----------------------------------------------------------------
-    always @(posedge clk) begin
-        if (!reset_n) begin
-            period_measured <= {IMAGE_SIZE{1'b0}};
-            freq_out_prev   <= {IMAGE_SIZE{1'b0}};
-            cycle_count     <= 0;
-
-            for (k = 0; k < IMAGE_SIZE; k = k + 1) begin
-                rise_count[k]        <= 0;
-                first_rise_cycle[k]  <= -1;
-                second_rise_cycle[k] <= -1;
-                first_rise_time[k]   <= 0;
-                second_rise_time[k]  <= 0;
-                measured_period[k]   <= 0;
-            end
-        end else begin
-            cycle_count <= cycle_count + 1;
-
-            for (k = 0; k < IMAGE_SIZE; k = k + 1) begin
-                if (freq_out_values[k] && !freq_out_prev[k]) begin
-                    if (rise_count[k] == 0) begin
-                        rise_count[k]       <= 1;
-                        first_rise_cycle[k] <= cycle_count;
-                        first_rise_time[k]  <= $time;
-                    end
-                    else if (rise_count[k] == 1) begin
-                        rise_count[k]         <= 2;
-                        second_rise_cycle[k]  <= cycle_count;
-                        second_rise_time[k]   <= $time;
-                        measured_period[k]    <= $time - first_rise_time[k];
-                        period_measured[k]    <= 1'b1;
-                    end
-                end
-            end
-
-            freq_out_prev <= freq_out_values;
-        end
-    end
 
     // ----------------------------------------------------------------
     // Main stimulus
     // ----------------------------------------------------------------
     initial begin
+        $dumpfile("tb_image_input_frequency_module.vcd");
+        $dumpvars(0, tb_image_input_frequency_module);
         $display("Image Output Testbench started successfully");
         $display("IMAGE_FILE  = %s", IMAGE_FILE);
         $display("OUTPUT_FILE = %s", OUTPUT_FILE);
@@ -133,6 +94,9 @@ module tb_image_input_frequency_module;
             first_rise_time[k]   = 0;
             second_rise_time[k]  = 0;
             measured_period[k]   = 0;
+
+            // Initialize pixel inputs to 0
+            pixel_in[k] = 0;
         end
 
         image_file = $fopen(IMAGE_FILE, "r");
@@ -166,6 +130,7 @@ module tb_image_input_frequency_module;
                 end
 
                 pixel_in[col] = temp_pixel;
+                // $display("  pixel_in[%0d] = %0h", col, pixel_in[col]);
             end
 
             // Let inputs propagate
@@ -186,10 +151,38 @@ module tb_image_input_frequency_module;
             end
 
             $display("Waiting for two rising edges from every pixel on row %0d", row);
-
+            // The checks below will wait until all pixels have produced two rising edges or until a timeout occurs
             while ((period_measured !== {IMAGE_SIZE{1'b1}}) && (cycle_count < MAX_WAIT_CYCLES)) begin
                 @(posedge clk);
+                cycle_count <= cycle_count + 1;
+
+                for (k = 0; k < IMAGE_SIZE; k = k + 1) begin
+                    if (freq_out_values[k] && !freq_out_prev[k]) begin
+                        if (rise_count[k] == 0) begin
+                            rise_count[k]       = 1;
+                            first_rise_cycle[k] = cycle_count;
+                            first_rise_time[k]  = $time;
+
+                        end
+                        else if (rise_count[k] == 1) begin
+                            rise_count[k]         = 2;
+                            second_rise_cycle[k]  = cycle_count;
+                            second_rise_time[k]   = $time;
+                            measured_period[k]    = $time - first_rise_time[k];
+                            period_measured[k]    = 1'b1;
+
+                            // $display("Pixel %0d produced 2 rising edges: input = %0h, first_rise_cycle = %0d, second_rise_cycle = %0d, first_rise_time = %0t, second_rise_time = %0t, measured_period = %0t",
+                            //          k, pixel_in[k], first_rise_cycle[k], second_rise_cycle[k],
+                            //          first_rise_time[k], second_rise_time[k], measured_period[k]);
+                        end
+                        
+                    end
+
+                end
+                freq_out_prev = freq_out_values;
             end
+
+            $display("Finished waiting for row %0d after %0d cycles", row, cycle_count);
 
             if (period_measured !== {IMAGE_SIZE{1'b1}}) begin
                 $display("Timeout on row %0d after %0d cycles", row, cycle_count);
