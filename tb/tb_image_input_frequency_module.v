@@ -206,19 +206,6 @@ module tb_image_input_frequency_module;
                     measured_period[k]);
             end
 
-        //     $display("Row %0d sample inputs:", row);
-        //     $display("  pixel_in[0]   = %0h", pixel_in[0]);
-        //     $display("  pixel_in[1]   = %0h", pixel_in[1]);
-        //     $display("  pixel_in[2]   = %0h", pixel_in[2]);
-        //     $display("  pixel_in[10]  = %0h", pixel_in[10]);
-        //     $display("  pixel_in[100] = %0h", pixel_in[100]);
-        //     $display("  pixel_in[500] = %0h", pixel_in[500]);
-        //     $display("  pixel_in[900] = %0h", pixel_in[900]);
-        //     $display("DUT sample inputs:");
-        // $display("  inst0   INPUT_VALUE = %0h", freq_module_inst[0].freq_module.INPUT_VALUE);
-        // $display("  inst1   INPUT_VALUE = %0h", freq_module_inst[1].freq_module.INPUT_VALUE);
-        // $display("  inst2   INPUT_VALUE = %0h", freq_module_inst[2].freq_module.INPUT_VALUE);
-        // $display("  inst10  INPUT_VALUE = %0h", freq_module_inst[10].freq_module.INPUT_VALUE);
             $fwrite(output_file, "\n");
 
             $display("Finished row %0d", row);
